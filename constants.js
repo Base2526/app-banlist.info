@@ -1,0 +1,1 @@
+export const HOST_GRAPHAL = "157.245.51.177:4000";
