@@ -14,7 +14,8 @@ import {
   FlatList,
   SafeAreaView,
   Image,
-  Alert
+  Alert,
+  Button
 } from "react-native";
 
 
@@ -24,6 +25,36 @@ import { gql, useQuery } from '@apollo/client'
 import CallDetectorManager from "react-native-call-detection";
 // import { createAppContainer } from "react-navigation";
 // import { createStackNavigator } from 'react-navigation-stack'
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+const HomeScreen = ({ navigation }) => {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Home Screen</Text>
+      <Button
+        title="Go to Details"
+        onPress={() => navigation.navigate('Details', { itemId: 86, otherParam: 'anything you want here'  })}
+      />
+    </View>
+  );
+}
+
+const DetailsScreen=({route, navigation})=> {
+
+  const { itemId, otherParam } = route.params;
+
+  console.log("DetailsScreen :", itemId, otherParam)
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Details Screen {itemId} {otherParam}</Text>
+      <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
+    </View>
+  );
+}
+
+const Stack = createNativeStackNavigator();
 
 
 
@@ -226,9 +257,10 @@ const App = () => {
 
   
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Text>Welcome to MySocialNetwork!</Text>
-    </SafeAreaView>
+    <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Details" component={DetailsScreen} />
+      </Stack.Navigator>
   );
   
 };
