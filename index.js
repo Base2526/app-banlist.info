@@ -27,7 +27,12 @@ import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { createUploadLink } from 'apollo-upload-client' // v15.0.0
 
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react'
+
 import { HOST_GRAPHAL } from './constants';
+
+import {store, persistor} from './reduxStore'
 
 const wsLink = new GraphQLWsLink(createClient({
   url: 'ws://'+ HOST_GRAPHAL +'/graphql',
@@ -165,11 +170,21 @@ const client = new ApolloClient({
   debug: true
 });
 
+/*
+
+        <App />
+      
+*/
+
 const AppX = () => (
   <NavigationContainer>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
+     {/* <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}> */}
+        <ApolloProvider client={client}>
+          <App />
+        </ApolloProvider>
+      {/* </PersistGate>
+    </Provider> */}
   </NavigationContainer>
 );
 
