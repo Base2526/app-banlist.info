@@ -65,3 +65,5 @@ buck-out/
 
 
 android/app/banlistinfo.keystore
+
+package-lock.json
