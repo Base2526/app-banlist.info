@@ -2,7 +2,7 @@
 // https://aboutreact.com/detect-call-states/
 
 //Import React
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 
 //Import required component
 import {
@@ -24,39 +24,231 @@ import { gql, useQuery } from '@apollo/client'
 //Import Call Detector
 import CallDetectorManager from "react-native-call-detection";
 // import { createAppContainer } from "react-navigation";
-// import { createStackNavigator } from 'react-navigation-stack'
-
-import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
-const HomeScreen = ({ navigation }) => {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-      <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate('Details', { itemId: 86, otherParam: 'anything you want here'  })}
-      />
-    </View>
-  );
-}
+import HomeScreen from './HomeScreen'
+import SearchScreen from './SearchScreen'
+
+import SettingScreen from "./SettingScreen"
+
+// const HomeScreen = ({ navigation }) => {
+//   return (
+//     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+//       <Text>Home Screen</Text>
+//       <Button
+//         title="Go to Search"
+//         onPress={() => 
+//           // navigation.navigate('Details', { itemId: 86, otherParam: 'anything you want here' })
+//         navigation.navigate('search')
+        
+//       }
+//       />
+//     </View>
+//   );
+// }
 
 const DetailsScreen=({route, navigation})=> {
 
-  const { itemId, otherParam } = route.params;
+  // const { itemId, otherParam } = route.params;
 
-  console.log("DetailsScreen :", itemId, otherParam)
+  console.log("DetailsScreen :", route)
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Details Screen {itemId} {otherParam}</Text>
+    <View >
+      <Text>Details Screen </Text>
       <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
     </View>
   );
 }
 
 const Stack = createNativeStackNavigator();
+const HomeStack = createStackNavigator();
+const SettingStack = createStackNavigator();
 
 
+const HomeStackScreen =({navigation, route}) => {
+  useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route);
+    // if (  routeName == "result_search" || 
+    //       routeName == "add_banlist" || 
+    //       routeName == "search" || 
+    //       routeName == "detail" ||
+    //       routeName == "login" ||
+    //       routeName == "forgot_password" ||
+    //       routeName == "sign_up" ||
+    //       routeName == "report" ||
+    //       routeName == "filter" ){
+    //     navigation.setOptions({tabBarVisible: false});
+    // }else {
+        // navigation.setOptions({tabBarVisible: true});
+    // }
+
+    console.log("HomeStackScreen :", routeName)
+  }, [navigation, route]);
+
+  return (
+    
+    <HomeStack.Navigator
+        // headerMode="screen"
+        screenOptions={{
+          // headerShown: false,
+          
+        }}
+        >
+        <HomeStack.Screen
+          name="home"
+          component={HomeScreen} 
+          options={{  
+                      headerTitle: ' Home ', 
+                      // headerStyle: {
+                      //   backgroundColor: '#f4511e',
+                      // },
+                      // headerRight: () => (
+                      //   <Button
+                      //     onPress={() => alert('This is a button!')}
+                      //     title="Info"
+                      //     color="#fff"
+                      //   />
+                      // ),
+          //             // headerShown: true, 
+          //             // headerBackTitle: 'Back', 
+          //             // // headerMode: "screen",
+          //             // headerRight: () => (
+          //             //   <TouchableOpacity 
+          //             //     style={{ marginHorizontal: 10 }}
+          //             //     onPress={()=>{
+          //             //       navigation.navigate('search')
+          //             //     }}>
+          //             //     <Ionicons name="search-outline" size={28}  />
+          //             //   </TouchableOpacity>
+                    
+          //             // )
+          }}
+        />
+        <HomeStack.Screen
+          name="search"
+          component={SearchScreen}
+          options={{  
+            headerTitle: 'Search', 
+          }}
+          // options={{
+          //   title: 'Search',
+          //   headerShown:false
+          // }}
+          // options={{
+          //   headerShown: false,
+          // }}
+        />
+        {/* 
+        <HomeStack.Screen 
+          name="result_search" 
+          component={ResultScreen}
+          // options={{ title: 'Result Search',  }}
+          options={{
+            title: 'Result search',
+            tabBarVisible: false,
+          }}
+        />
+        <HomeStack.Screen 
+          name="add_banlist" 
+          component={AddBanlistScreen} 
+          options={{ title: 'Add Banlist' }}
+        />
+        <HomeStack.Screen 
+          name="detail" 
+          component={DetailScreen}
+          // options={{ title: 'Result Search',  }}
+          options={{
+            title: 'Detail',
+            tabBarVisible: false,
+          }}
+        />
+        <HomeStack.Screen 
+          name="login" 
+          component={LoginScreen}
+          options={{
+            title: 'Login',
+            tabBarVisible: false,
+        }}/>
+        <HomeStack.Screen 
+          name="forgot_password" 
+          component={ForgotPassword} 
+          options={{ title: 'Forgot password' }}/>
+        <HomeStack.Screen 
+          name="sign_up" 
+          component={SignUp} 
+          options={{ title: 'Sign Up' }}/>  
+        <HomeStack.Screen 
+          name="report" 
+          component={ReportScreen} 
+          options={{ title: 'Report' }}/>  
+        <HomeStack.Screen 
+          name="filter" 
+          component={FilterScreen} 
+          options={{ title: '' }}/>  
+          */}
+    </HomeStack.Navigator>
+  );
+}
+
+const SettingStackScreen =({navigation, route}) => {
+  useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route);
+    // if (  routeName == "result_search" || 
+    //       routeName == "add_banlist" || 
+    //       routeName == "search" || 
+    //       routeName == "detail" ||
+    //       routeName == "login" ||
+    //       routeName == "forgot_password" ||
+    //       routeName == "sign_up" ||
+    //       routeName == "report" ||
+    //       routeName == "filter" ){
+    //     navigation.setOptions({tabBarVisible: false});
+    // }else {
+        // navigation.setOptions({tabBarVisible: true});
+    // }
+
+    console.log("HomeStackScreen :", routeName)
+  }, [navigation, route]);
+
+  return (
+    <SettingStack.Navigator>
+      <SettingStack.Screen
+        name="setting"
+        component={SettingScreen} 
+        options={{  
+                    headerTitle: 'Settings', 
+                    // headerStyle: {
+                    //   backgroundColor: '#f4511e',
+                    // },
+                    // headerRight: () => (
+                    //   <Button
+                    //     onPress={() => alert('This is a button!')}
+                    //     title="Info"
+                    //     color="#fff"
+                    //   />
+                    // ),
+        }}
+      />
+      <SettingStack.Screen
+        name="search"
+        component={SearchScreen}
+        options={{  
+          headerTitle: 'Search', 
+        }}
+        // options={{
+        //   title: 'Search',
+        //   headerShown:false
+        // }}
+        // options={{
+        //   headerShown: false,
+        // }}
+      />
+    </SettingStack.Navigator>
+  );
+}
 
 
 // import Home from "./src/Home";
@@ -78,6 +270,8 @@ query Query($userId: ID, $page: Long, $perPage: Long, $keywordSearch: String, $c
 // });
 
 // const AppContainer = createAppContainer(AppNavigator);
+
+const Tab = createBottomTabNavigator();
 
 const App = () => {
   //to keep callDetector reference
@@ -257,69 +451,42 @@ const App = () => {
 
   
   return (
-    <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Details" component={DetailsScreen} />
-      </Stack.Navigator>
+
+    <NavigationContainer> 
+      <Tab.Navigator 
+        initialRouteName="Home"
+        screenOptions={{ headerShown: false }}>
+        <Tab.Screen 
+          name="Home" 
+          component={HomeStackScreen} 
+          options={({ route }) => ({
+            tabBarBadge: 3,
+            tabBarStyle: ((route) => {
+              const routeName = getFocusedRouteNameFromRoute(route) ?? ""
+              console.log(routeName)
+              if (routeName === 'search') {
+                return { display: "none" }
+              }
+              return
+            })(route),
+          })}/>
+        <Tab.Screen name="Settings" component={SettingStackScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
-  
 };
 
-export default App;
 
+// Just some styles
 const styles = StyleSheet.create({
-  container: {
+  mainScreen: {
     flex: 1,
-    backgroundColor: "#F5FCFF",
-    color:"#e1e1e1"
+    alignItems: "center",
+    justifyContent: "center",
   },
-  header: {
-    backgroundColor: "#ff8c21",
-    padding: 10
-  },
-  headerTextLarge: {
-    textAlign: "center",
+  name: {
     fontSize: 20,
-    color: "white"
   },
-  headerText: {
-    marginTop: 5,
-    textAlign: "center",
-    fontSize: 18,
-    color: "white"
-  },
-  button: {
-    alignItems: "center",
-    backgroundColor: "#ff8c21",
-    padding: 10,
-    justifyContent: "center",
-    height: 60,
-    width: "100%"
-  },
-  buttonText: {
-    textAlign: "center",
-    fontSize: 18,
-    color: "white"
-  },
-  callLogs: {
-    padding: 16,
-    fontSize: 16,
-    color: "#333333"
-  },
-  fabStyle: {
-    position: "absolute",
-    width: 60,
-    height: 60,
-    borderRadius: 60 / 2,
-    alignItems: "center",
-    justifyContent: "center",
-    right: 30,
-    bottom: 30,
-    backgroundColor: "yellow"
-  },
-  fabImageStyle: {
-    resizeMode: "contain",
-    width: 20,
-    height: 20
-  }
 });
+
+export default App;

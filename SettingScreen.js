@@ -19,7 +19,7 @@ import {
 } from "react-native";
 
 
-const HomeScreen = (props) => {
+const SettingScreen = (props) => {
 
   // React.useLayoutEffect(() => {
   //   this.props.navigation.setOptions({
@@ -57,4 +57,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default SettingScreen;
