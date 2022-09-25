@@ -3,7 +3,6 @@
 
 //Import React
 import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
 
 //Import required component
 import {
@@ -20,7 +19,7 @@ import {
 } from "react-native";
 
 
-const HomeScreen = (props) => {
+const SettingScreen = (props) => {
 
   // React.useLayoutEffect(() => {
   //   this.props.navigation.setOptions({
@@ -58,11 +57,4 @@ const styles = StyleSheet.create({
   },
 });
 
-// export default HomeScreen;
-const mapStateToProps = (state, ownProps) => {
-  console.log("mapStateToProps  :", state)
-  return {
-  }
-};
-
-export default connect( mapStateToProps, null )(HomeScreen);
+export default SettingScreen;

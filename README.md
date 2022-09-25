@@ -16,3 +16,8 @@ Android debuger
 
 example 
 https://github.com/AliA1997/top25NFLPlayers-ReactNative-GraphQL/blob/master/top25Players/App.js
+
+
+// Hide bottom tab bar on a specific screen in React Navigation 6.0
+https://medium.com/@mspviraj/hide-bottom-tab-bar-on-a-specific-screen-in-react-navigation-6-0-26d31625d339
+
