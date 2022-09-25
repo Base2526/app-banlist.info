@@ -19,6 +19,12 @@ import {
   Button
 } from "react-native";
 
+// import { DeleteOutlineOutlined } from "@material-ui/icons";
+
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 const HomeScreen = (props) => {
 
@@ -40,6 +46,8 @@ const HomeScreen = (props) => {
             props.navigation.navigate('search')
           }
         />
+        {/* <Ionicons size={30} color="#900" /> */}
+        <Icon name="rocket" size={30} color="#900" />
     {/* </SafeAreaView> */}
     </View>
   );
@@ -50,8 +58,8 @@ const HomeScreen = (props) => {
 const styles = StyleSheet.create({
   mainScreen: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    // alignItems: "center",
+    // justifyContent: "center",
   },
   name: {
     fontSize: 20,
