@@ -63,16 +63,15 @@ const DetailsScreen=({route, navigation})=> {
   );
 }
 
-BackgroundTimer.runBackgroundTimer(() => { 
-  //code that will be called every 3 seconds 
-  console.log(">> x")
-  }, 
-  3000);
+// BackgroundTimer.runBackgroundTimer(() => { 
+//   //code that will be called every 3 seconds 
+//   console.log(">> x")
+//   }, 
+//   3000);
 
 const Stack = createNativeStackNavigator();
 const HomeStack = createStackNavigator();
 const SettingStack = createStackNavigator();
-
 
 const HomeStackScreen =({navigation, route}) => {
   useLayoutEffect(() => {
@@ -296,7 +295,7 @@ const App = () => {
     "keywordSearch": "",
     "category": "" }
   });
-  console.log("data >> :", loading, error, data)
+  // console.log("data >> :", loading, error, data)
 
   // 
 

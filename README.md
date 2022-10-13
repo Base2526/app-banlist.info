@@ -79,3 +79,29 @@ https://thunderwiring.wordpress.com/2018/04/01/creating-floating-chat-head-like-
 
 // Deep link
 https://blog.jscrambler.com/how-to-handle-deep-linking-in-a-react-native-app
+
+// Android localstorage & save object
+https://stackoverflow.com/questions/29648630/save-arraylistcustom-object-to-local-storage
+
+// Android communitcation react-native
+
+JAVA 
+try {
+//
+//                        // context - is the context you get from broadcastreceivers onReceive
+//                        ReactApplication rnApp = (ReactApplication) context.getApplicationContext();
+//
+//                        rnApp.getReactNativeHost().getReactInstanceManager()
+//                                .getCurrentReactContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+//                                .emit("rnApp", map);
+//
+//                    } catch (Exception e){
+//                        Log.e("ReactNative", "Caught Exception: " + e.getMessage());
+//                    }
+
+react-native 
+   DeviceEventEmitter.addListener('rnApp', (e) => {
+      // handle event and you will get a value in event object, you can log it here
+
+      console.log("DeviceEventEmitter : rnApp")
+    });

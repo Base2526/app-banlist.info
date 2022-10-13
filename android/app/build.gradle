@@ -302,6 +302,8 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    implementation 'com.google.code.gson:gson:2.8.7'
 }
 
 if (isNewArchitectureEnabled()) {

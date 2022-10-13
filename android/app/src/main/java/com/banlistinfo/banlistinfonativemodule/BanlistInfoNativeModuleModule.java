@@ -3,8 +3,12 @@
 package com.banlistinfo.banlistinfonativemodule;
 
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import androidx.annotation.Nullable;
 
+import com.banlistinfo.Receive;
 import com.banlistinfo.Window;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -12,7 +16,11 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,5 +79,17 @@ public class BanlistInfoNativeModuleModule extends ReactContextBaseJavaModule {
         // A method for emitting from the native side to JS
         // https://facebook.github.io/react-native/docs/native-modules-android.html#sending-events-to-javascript
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, eventData);
+    }
+
+    @ReactMethod
+    public static void getPhoneList(Callback callBack){
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences(reactContext);
+        Gson gson = new Gson();
+        String json = prefs.getString("PHONE_LIST", null);
+        Type listType = new TypeToken<ArrayList<Receive>>() {}.getType();
+//        return gson.fromJson(json, listType);
+
+        callBack.invoke(json);
     }
 }

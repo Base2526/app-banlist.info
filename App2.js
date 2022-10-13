@@ -42,7 +42,7 @@ const App2 = () => {
   let [flatListItems, setFlatListItems] = useState([]);
 
   const { loading, error, data } = useQuery(GET_LOCATIONS);
-  console.log("data >> :", loading, error, data)
+  // console.log("data >> :", loading, error, data)
 
   const callFriendTapped = () => {
     // Linking.openURL("tel:5555555555").catch((err) => {

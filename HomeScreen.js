@@ -17,26 +17,21 @@ import {
   Image,
   Alert,
   Button,
-
-  NativeModules
+  NativeModules,
+  DeviceEventEmitter
 } from "react-native";
 
-// import { DeleteOutlineOutlined } from "@material-ui/icons";
-
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
 import Icon from 'react-native-vector-icons/FontAwesome';
-
-// import { PermissionsAndroid } from 'react-native';
 import CallLogs from 'react-native-call-log'
-
 import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
-
-import { DeviceEventEmitter } from 'react-native';
+import _ from "lodash"
 
 const HomeScreen = (props) => {
 
   const banlistInfoModule = NativeModules.BanlistInfoNativeModule
+
+  const [datas, setDatas] = useState([]);
 
   // React.useLayoutEffect(() => {
   //   this.props.navigation.setOptions({
@@ -46,15 +41,31 @@ const HomeScreen = (props) => {
   //   });
   // }, [this.props.navigation]);
 
-  
+  DeviceEventEmitter.addListener('rnApp', (data) => {
+    // handle event and you will get a value in event object, you can log it here
 
+    let newDatas = [...datas, data]
+
+    console.log("DeviceEventEmitter : datas", datas)
+    console.log("DeviceEventEmitter : data", data)
+    console.log("DeviceEventEmitter : newDatas", newDatas)
+
+    setDatas(newDatas)
+  });
+
+  
   useEffect(() => {
 
-    DeviceEventEmitter.addListener('rnApp', (e) => {
-      // handle event and you will get a value in event object, you can log it here
+    
 
-      console.log("DeviceEventEmitter : rnApp")
-    });
+    banlistInfoModule.getPhoneList((values)=>{
+      let newValues = JSON.parse(values)
+      // _.map(newValues, (value)=>{
+      //   console.log("value :", value) 
+      // })
+
+      setDatas(newValues)
+    })
 
    
     // console.log("HomeScreen")
@@ -115,30 +126,52 @@ const HomeScreen = (props) => {
       });
     }
   }, []);
+
+  useEffect(()=>{
+    console.log(">>> datas :", datas)
+  }, [datas])
   
   return (
     <View style={styles.mainScreen}>
-    {/* <SafeAreaView style={{ flex: 1 }}> */}
-      <Text>You have (undefined) friends.</Text>
+      {/* <Text>You have friends.</Text>
       <Button
           title="Go to Search"
           onPress={() =>
             props.navigation.navigate('search')
           }
         />
-        {/* <Ionicons size={30} color="#900" /> */}
         <Icon name="rocket" size={30} color="#900" />
-    {/* </SafeAreaView> */}
 
-    <Button title="Test Native Bridge" onPress = {()=>{
-                   //we will call our native Java Code here.
 
-                  console.log("Test Native Bridge")
+      <Button 
+            title="Test Native Bridge" 
+            onPress = {()=>{
 
-                  banlistInfoModule.MyBridgeMethod("Its from JavaScriptCode",(fromJavaCode)=>{
-                    console.log(fromJavaCode)
-                  })
-          }} />
+              console.log("Test Native Bridge")
+
+              banlistInfoModule.MyBridgeMethod("Its from JavaScriptCode",(fromJavaCode)=>{
+                console.log(fromJavaCode)
+              })
+            }} /> */}
+
+
+      <FlatList
+        data={ datas /*[
+          {key: 'Devin'},
+          {key: 'Dan'},
+          {key: 'Dominic'},
+          {key: 'Jackson'},
+          {key: 'James'},
+          {key: 'Joel'},
+          {key: 'John'},
+          {key: 'Jillian'},
+          {key: 'Jimmy'},
+          {key: 'Julie'},
+        ] */}
+        renderItem={({item}) =>{
+          return <Text style={styles.item}>{item.type} : {item.phoneNumber} :: {item.messages}</Text>
+        } }
+      />
     </View>
   );
   

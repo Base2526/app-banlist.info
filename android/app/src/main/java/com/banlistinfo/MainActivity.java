@@ -20,6 +20,9 @@ import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 public class MainActivity extends ReactActivity {
 
   private static final String TAG = MainActivity.class.getName();
@@ -90,6 +93,20 @@ public class MainActivity extends ReactActivity {
         }
       }
     }
+
+
+    ArrayList<Receive> list = new ArrayList<>();
+
+    Receive receive = new Receive();
+    receive.setType(ReceiveType.PHONE);
+    receive.setCreatedAt(new Date());
+    receive.setPhoneNumber("0988264820");
+
+    list.add(receive);
+
+//    Log.i(TAG,  ">>> " + String.valueOf(list.contains(receive2))  );
+
+    Log.i(TAG, "list");
   }
 
   // You can do the assignment inside onAttach or onCreate, i.e, before the activity is displayed
