@@ -17,7 +17,7 @@ import {
   Alert,
   Button
 } from "react-native";
-
+import BackgroundTimer from 'react-native-background-timer';
 
 import { gql, useQuery } from '@apollo/client'
 
@@ -62,6 +62,12 @@ const DetailsScreen=({route, navigation})=> {
     </View>
   );
 }
+
+BackgroundTimer.runBackgroundTimer(() => { 
+  //code that will be called every 3 seconds 
+  console.log(">> x")
+  }, 
+  3000);
 
 const Stack = createNativeStackNavigator();
 const HomeStack = createStackNavigator();
