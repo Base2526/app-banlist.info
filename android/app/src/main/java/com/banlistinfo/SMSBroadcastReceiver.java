@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
@@ -61,11 +60,10 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
                     Log.i(TAG, "Message phone number : " + messages[0].getOriginatingAddress());
                     Log.i(TAG, "Message : " + messages[0].getMessageBody());
 
+//                  showToast(context,"SMS " + messages[0].getOriginatingAddress() + "  " + messages[0].getMessageBody());
 
-//                    showToast(context,"SMS " + messages[0].getOriginatingAddress() + "  " + messages[0].getMessageBody());
-
-                    if(Utils.isAppIsInBackground(context)){
-                        Window window=new Window(context);
+                    if((new Utils()).isAppIsInBackground(context)){
+                        Window window = new Window(context);
                         window.open(messages[0].getOriginatingAddress() + " : " + messages[0].getMessageBody());
 
 
@@ -96,7 +94,7 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
                     }else{
                         try {
                             WritableMap map = Arguments.createMap();
-                            map.putString("type", "SMS");
+                            map.putString("type", ReceiveType.SMS.toString());
 
                             map.putString("phoneNumber", messages[0].getOriginatingAddress());
                             map.putString("messages", messages[0].getMessageBody());

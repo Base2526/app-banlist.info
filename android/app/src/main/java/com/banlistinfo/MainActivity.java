@@ -106,7 +106,7 @@ public class MainActivity extends ReactActivity {
 
 //    Log.i(TAG,  ">>> " + String.valueOf(list.contains(receive2))  );
 
-    Log.i(TAG, "list");
+    Log.i(TAG, "");
   }
 
   // You can do the assignment inside onAttach or onCreate, i.e, before the activity is displayed

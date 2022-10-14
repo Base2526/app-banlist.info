@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: "kotlin-android"
 
 import com.android.build.OutputFile
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -129,6 +130,8 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -141,6 +144,7 @@ android {
         versionCode 1
         versionName "1.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+
 
         if (isNewArchitectureEnabled()) {
             // We configure the CMake build only if you decide to opt-in for the New Architecture.
@@ -281,6 +285,9 @@ dependencies {
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
+
+        implementation 'androidx.core:core-ktx:1.3.2'
+        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     }
 
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
@@ -304,6 +311,8 @@ dependencies {
     }
 
     implementation 'com.google.code.gson:gson:2.8.7'
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.0"
 }
 
 if (isNewArchitectureEnabled()) {

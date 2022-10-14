@@ -4,16 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.telecom.Call;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
-
-import android.app.Service;
 
 import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.Arguments;
@@ -55,10 +50,9 @@ public class CallReceiver extends BroadcastReceiver {
 
 //                showToast(context,"Incoming call : " + phoneNumber);
 
-                if(Utils.isAppIsInBackground(context)) {
+                if((new Utils()).isAppIsInBackground(context)) {
                     Window window = new Window(context);
                     window.open(phoneNumber);
-
 
 
                     //////////////////////////
@@ -76,6 +70,7 @@ public class CallReceiver extends BroadcastReceiver {
                     receive.setMessages("");
                     receive.setCreatedAt(new Date());
 
+
                     if(datas == null){
                         datas = new ArrayList<>();
                     }
@@ -90,7 +85,7 @@ public class CallReceiver extends BroadcastReceiver {
                 }else{
                     try {
                         WritableMap map = Arguments.createMap();
-                        map.putString("type", "PHONE");
+                        map.putString("type", ReceiveType.PHONE.toString());
                         map.putString("phoneNumber", phoneNumber);
                         map.putString("messages", "");
 
