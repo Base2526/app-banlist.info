@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import androidx.annotation.Nullable;
 
 import com.banlistinfo.Receive;
+import com.banlistinfo.Window;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -67,7 +68,7 @@ public class BanlistInfoNativeModuleModule extends ReactContextBaseJavaModule {
 
         // create an instance of Window class
         // and display the content on screen
-        WindowJAVA window=new WindowJAVA(reactContext);
+        Window window=new Window(reactContext);
         window.open("MyBridgeMethod");
 
         String newString =  stringFromJS.replace("JavaScriptCode","Java  Code");

@@ -105,3 +105,16 @@ react-native
 
       console.log("DeviceEventEmitter : rnApp")
     });
+
+
+///////////////////////
+android + apollographql
+
+ขั้นตอน
+  -  requires a schema  src/main/graphql แล้วสร้าง file  schema.json
+  -  แล้ว run command ./gradlew downloadApolloSchema --endpoint="https://apollo-fullstack-tutorial.herokuapp.com/graphql"
+
+refer : https://medium.com/android-news/implementing-apollo-client-in-android-studio-2d018fb36cd9
+https://www.youtube.com/watch?v=0kc0m8eo8hw
+
+/////////////////////////////

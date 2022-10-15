@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
@@ -17,11 +19,21 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import kotlin.coroutines.Continuation;
+import kotlin.coroutines.CoroutineContext;
+import kotlinx.coroutines.GlobalScope;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class CallReceiver extends BroadcastReceiver {
     private static final String TAG = CallReceiver.class.getName();
@@ -105,6 +117,54 @@ public class CallReceiver extends BroadcastReceiver {
                         Log.e("ReactNative", "Caught Exception: " + e.getMessage());
                     }
                 }
+
+
+//                Thread thread = new Thread(new Runnable() {
+//
+//                    @Override
+//                    public void run() {
+//                        try  {
+//                            //Your code goes here
+//
+//                            OkHttpClient client = new OkHttpClient();
+//
+//                            RequestBody formBody = new FormBody.Builder()
+//                                    .add("firstname", "firstname message")
+//                                    .add("lastname", "lastname message")
+//                                    .build();
+//                            Request request = new Request.Builder()
+//                                    .url("https://fierce-cove-29863.herokuapp.com/createAnUser")
+//                                    .post(formBody)
+//                                    .build();
+//
+//                            try {
+//                                Response response = client.newCall(request).execute();
+//
+//                                Log.i(TAG, "");
+//                                // Do something with the response.
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
+//
+//                thread.start();
+
+                (new Utils()).test_apollo(context, new Continuation<Boolean>() {
+                    @NonNull
+                    @Override
+                    public CoroutineContext getContext() {
+                        return null;
+                    }
+
+                    @Override
+                    public void resumeWith(@NonNull Object o) {
+                        Log.i(TAG, "");
+                    }
+                });
             }
         }
 
