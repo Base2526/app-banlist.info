@@ -119,6 +119,20 @@ https://www.youtube.com/watch?v=0kc0m8eo8hw
 
 /////////////////////////////
 
+
+/////////////////// downloadApolloSchema /////////////////////
 ./gradlew downloadApolloSchema --endpoint="https://apollo-fullstack-tutorial.herokuapp.com/graphql" --schema="app/src/main/graphql/schema.json"
 
 app/src/main/graphql
+
+
+./gradlew downloadApolloSchema --endpoint="https://banlist.info/graphql" --schema="app/src/main/graphql/schema.json"
+
+
+กรณี  javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+
+ให้ใส่ --insecure
+
+./gradlew downloadApolloSchema --endpoint="https://banlist.info/graphql" --schema="app/src/main/graphql/schema.json" --insecure
+
+/////////////////// downloadApolloSchema /////////////////////

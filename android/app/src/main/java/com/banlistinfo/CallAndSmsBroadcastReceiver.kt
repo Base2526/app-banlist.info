@@ -3,17 +3,10 @@ package com.banlistinfo
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.preference.PreferenceManager
 import android.provider.Telephony
-import android.provider.Telephony.Sms
-import android.telephony.SmsMessage
 import android.telephony.TelephonyManager
 import android.util.Log
-import androidx.datastore.dataStore
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
