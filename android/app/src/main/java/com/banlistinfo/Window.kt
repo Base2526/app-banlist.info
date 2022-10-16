@@ -42,17 +42,17 @@ open class Window(context: Context) {
         // getting a LayoutInflater
         layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         // inflating the view with the custom layout we created
-        mView = layoutInflater!!.inflate(R.layout.popup_window, null)
+        mView = layoutInflater?.inflate(R.layout.popup_window, null)
         // set onClickListener on the remove button, which removes
         // the view from the window
 
-        mView!!.findViewById<View>(R.id.window_close).setOnClickListener { close() }
-        mView!!.findViewById<View>(R.id.window_open).setOnClickListener {
+        mView?.findViewById<View>(R.id.window_close)?.setOnClickListener { close() }
+        mView?.findViewById<View>(R.id.window_open)?.setOnClickListener {
             (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).removeView(
                 mView
             )
             // invalidate the view
-            mView!!.invalidate()
+            mView?.invalidate()
             val i = Intent(
                 Intent.ACTION_VIEW, Uri.parse("banlistapp://")
             )
@@ -62,7 +62,7 @@ open class Window(context: Context) {
 
         // Define the position of the
         // window within the screen
-        mParams!!.gravity = Gravity.CENTER
+        mParams?.gravity = Gravity.CENTER
         mWindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     }
 
@@ -89,11 +89,11 @@ open class Window(context: Context) {
             }
             // check if the view is already
             // inflated or present in the window
-            if (mView!!.windowToken == null) {
-                if (mView!!.parent == null) {
-                    val titleText = mView!!.findViewById<View>(R.id.titleText) as TextView
+            if (mView?.windowToken == null) {
+                if (mView?.parent == null) {
+                    val titleText = mView?.findViewById<View>(R.id.titleText) as TextView
                     titleText.text = text
-                    mWindowManager!!.addView(mView, mParams)
+                    mWindowManager?.addView(mView, mParams)
                 }
             }
         } catch (e: Exception) {
@@ -105,9 +105,9 @@ open class Window(context: Context) {
         try {
 
             // remove the view from the window
-            (context!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager).removeView(mView)
+            (context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager).removeView(mView)
             // invalidate the view
-            mView!!.invalidate()
+            mView?.invalidate()
             // remove all views
 //            ((ViewGroup)mView.getParent()).removeAllViews();
 

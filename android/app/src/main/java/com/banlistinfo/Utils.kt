@@ -5,14 +5,6 @@ import android.app.ActivityManager.RunningAppProcessInfo
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import bolts.Task.delay
-import com.apollographql.apollo3.ApolloCall
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
-import com.apollographql.apollo3.network.ws.WebSocketNetworkTransport
-import com.example.LaunchesQuery
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 
@@ -74,15 +66,15 @@ open class Utils {
 
 //            GlobalScope.launch { // launch a new coroutine in background and continue
             runBlocking {
-                val response = try {
-                    apolloClient(context).query(LaunchesQuery()).execute()
-                } catch (e: Exception) {
-                    println("")
-                    null
-                }
-
-                println(response?.data)
-                println("")
+//                val response = try {
+//                    apolloClient(context).query(LaunchesQuery()).execute()
+//                } catch (e: Exception) {
+//                    println("")
+//                    null
+//                }
+//
+//                println(response?.data)
+//                println("")
             }
 
             // Apollo runs query on background thread

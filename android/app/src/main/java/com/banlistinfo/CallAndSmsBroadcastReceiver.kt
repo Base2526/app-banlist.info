@@ -88,6 +88,10 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
                 when(intent?.getStringExtra(TelephonyManager.EXTRA_STATE)){
                     TelephonyManager.EXTRA_STATE_OFFHOOK ->{
                         println("EXTRA_STATE_OFFHOOK : Call started")
+
+//                        context.sendOrderedBroadcastAsUser()
+
+
                     }
                     TelephonyManager.EXTRA_STATE_IDLE ->{
                         println("EXTRA_STATE_IDLE : Call ended")
@@ -101,8 +105,17 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
                             println(phoneNumber)
 
                             if (context?.let { Utils().isAppIsInBackground(it) } == true) {
-                                val window = context?.let { Window(it) }
-                                window?.open(phoneNumber)
+//                                val window = context?.let { Window(it) }
+//                                window?.open(phoneNumber)
+
+
+                                killCall(context);
+
+                                try {
+                                    Window(context)?.open(phoneNumber)
+                                } catch (e: Exception) {
+                                    Log.e("ReactNative", "Caught Exception: " + e.message)
+                                }
 
                                 //////////////////////////
                                 /*
@@ -137,6 +150,7 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
 //                                editor.commit()
 
                                 /////////////////////////
+
                             } else {
                                 try {
                                     val map = Arguments.createMap()
@@ -169,6 +183,31 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
             else ->{
                 println("Other case")
             }
+        }
+    }
+
+    fun killCall(context: Context): Boolean {
+        return try {
+            // Get the boring old TelephonyManager
+            val telephonyManager =
+                context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+
+            // Get the getITelephony() method
+            val classTelephony = Class.forName(telephonyManager.javaClass.name)
+            val methodGetITelephony = classTelephony.getDeclaredMethod("getITelephony")
+            // Ignore that the method is supposed to be private
+            methodGetITelephony.isAccessible = true
+            // Invoke getITelephony() to get the ITelephony interface
+            val telephonyInterface = methodGetITelephony.invoke(telephonyManager)
+            // Get the endCall method from ITelephony
+            val telephonyInterfaceClass = Class.forName(telephonyInterface.javaClass.name)
+            val methodEndCall = telephonyInterfaceClass.getDeclaredMethod("endCall")
+            // Invoke endCall()
+            methodEndCall.invoke(telephonyInterface)
+            true
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            false
         }
     }
 }

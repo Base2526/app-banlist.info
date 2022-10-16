@@ -9,11 +9,6 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-
-import com.apollographql.apollo3.api.ApolloResponse;
-import com.example.LaunchesQuery;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
@@ -22,6 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -37,12 +33,70 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+interface ITelephony {
+
+
+    boolean endCall();
+
+
+    void answerRingingCall();
+
+
+    void silenceRinger();
+
+}
+
 public class CallReceiver extends BroadcastReceiver {
     private static final String TAG = CallReceiver.class.getName();
     private static boolean mStateOutgoingCall;
 
+    private ITelephony telephonyService;
+
+    public boolean killCall(Context context) {
+        try {
+            // Get the boring old TelephonyManager
+            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+
+            // Get the getITelephony() method
+            Class classTelephony = Class.forName(telephonyManager.getClass().getName());
+            Method methodGetITelephony = classTelephony.getDeclaredMethod("getITelephony");
+            // Ignore that the method is supposed to be private
+            methodGetITelephony.setAccessible(true);
+            // Invoke getITelephony() to get the ITelephony interface
+            Object telephonyInterface = methodGetITelephony.invoke(telephonyManager);
+            // Get the endCall method from ITelephony
+            Class telephonyInterfaceClass = Class.forName(telephonyInterface.getClass().getName());
+            Method methodEndCall = telephonyInterfaceClass.getDeclaredMethod("endCall");
+            // Invoke endCall()
+            methodEndCall.invoke(telephonyInterface);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        Log.v(TAG, "Receving....");
+        TelephonyManager telephony = (TelephonyManager)
+                context.getSystemService(Context.TELEPHONY_SERVICE);
+        try {
+
+            killCall(context);
+
+            Class c = Class.forName(telephony.getClass().getName());
+            Method m = c.getDeclaredMethod("getITelephony");
+            m.setAccessible(true);
+            telephonyService = (ITelephony) m.invoke(telephony);
+            //telephonyService.silenceRinger();
+            telephonyService.endCall();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         if(intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_OFFHOOK)){
 //            showToast(context,"Call started...");
 

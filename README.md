@@ -136,3 +136,12 @@ app/src/main/graphql
 ./gradlew downloadApolloSchema --endpoint="https://banlist.info/graphql" --schema="app/src/main/graphql/schema.json" --insecure
 
 /////////////////// downloadApolloSchema /////////////////////
+
+
+/////// android block call //////////////////////////////
+https://pastebin.com/kAzrWvaD
+http://androidsourcecode.blogspot.com/2010/10/blocking-incoming-call-android.html
+https://stackoverflow.com/questions/23097944/can-i-hang-up-a-call-programmatically-in-android
+https://stackoverflow.com/questions/50351444/abortbroadcast-not-working-in-smsreceiver-broadcast
+
+/////// android block call //////////////////////////////
