@@ -110,7 +110,7 @@ public class MainActivity extends ReactActivity {
     ArrayList<Receive> list = new ArrayList<>();
 
     Receive receive = new Receive();
-    receive.setType(ReceiveType.PHONE);
+    receive.setType("PHONE");
     receive.setCreatedAt(new Date());
     receive.setPhoneNumber("0988264820");
 

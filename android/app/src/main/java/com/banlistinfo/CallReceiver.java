@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.apollographql.apollo3.api.ApolloResponse;
+import com.example.LaunchesQuery;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
@@ -37,7 +39,6 @@ import okhttp3.Response;
 
 public class CallReceiver extends BroadcastReceiver {
     private static final String TAG = CallReceiver.class.getName();
-
     private static boolean mStateOutgoingCall;
 
     @Override
@@ -77,7 +78,7 @@ public class CallReceiver extends BroadcastReceiver {
                     ArrayList<Receive> datas=  gson.fromJson(json, listType);;
 
                     Receive receive = new Receive();
-                    receive.setType(ReceiveType.PHONE);
+                    receive.setType("PHONE");
                     receive.setPhoneNumber(phoneNumber);
                     receive.setMessages("");
                     receive.setCreatedAt(new Date());
@@ -97,7 +98,7 @@ public class CallReceiver extends BroadcastReceiver {
                 }else{
                     try {
                         WritableMap map = Arguments.createMap();
-                        map.putString("type", ReceiveType.PHONE.toString());
+                        map.putString("type", "PHONE");
                         map.putString("phoneNumber", phoneNumber);
                         map.putString("messages", "");
 
@@ -118,143 +119,10 @@ public class CallReceiver extends BroadcastReceiver {
                     }
                 }
 
+//                (new Utils()).test_apollo(context);
 
-//                Thread thread = new Thread(new Runnable() {
-//
-//                    @Override
-//                    public void run() {
-//                        try  {
-//                            //Your code goes here
-//
-//                            OkHttpClient client = new OkHttpClient();
-//
-//                            RequestBody formBody = new FormBody.Builder()
-//                                    .add("firstname", "firstname message")
-//                                    .add("lastname", "lastname message")
-//                                    .build();
-//                            Request request = new Request.Builder()
-//                                    .url("https://fierce-cove-29863.herokuapp.com/createAnUser")
-//                                    .post(formBody)
-//                                    .build();
-//
-//                            try {
-//                                Response response = client.newCall(request).execute();
-//
-//                                Log.i(TAG, "");
-//                                // Do something with the response.
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                });
-//
-//                thread.start();
-
-                (new Utils()).test_apollo(context, new Continuation<Boolean>() {
-                    @NonNull
-                    @Override
-                    public CoroutineContext getContext() {
-                        return null;
-                    }
-
-                    @Override
-                    public void resumeWith(@NonNull Object o) {
-                        Log.i(TAG, "");
-                    }
-                });
             }
         }
-
-        /*
-        System.out.println("intent.getAction() :" + intent.getAction());
-        if(intent.getAction().equals("android.intent.action.PHONE_STATE")){
-            String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
-            if(state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)){
-                Log.d(TAG, "Inside Extra state off hook");
-                String number = intent.getStringExtra(intent.EXTRA_PHONE_NUMBER);
-                Log.e(TAG, "outgoing number : " + number);
-            }else if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)){
-                Log.e(TAG, "Inside EXTRA_STATE_RINGING");
-                String number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
-                Log.e(TAG, "incoming number : " + number);
-            }else if(state.equals(TelephonyManager.EXTRA_STATE_IDLE)){
-                Log.d(TAG, "Inside EXTRA_STATE_IDLE");
-            }
-        }
-
-        TelephonyManager tm = (TelephonyManager)context.getSystemService(Service.TELEPHONY_SERVICE);
-        if (tm.getCallState() == TelephonyManager.CALL_STATE_OFFHOOK) {
-
-            String number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
-            Log.d(TAG, "tm.getCallState() :" + number);
-        }
-        */
-
-        /*
-        String action = intent.getAction();
-
-        if (action.equals(Intent.ACTION_NEW_OUTGOING_CALL)) {
-
-            if (mStateOutgoingCall) {
-                return;
-            }
-
-            String number = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
-            setResultData(null);
-
-            Log.v(TAG, "tel:" + number);
-            Toast.makeText(context, "tel:" + number, Toast.LENGTH_SHORT).show();
-
-//            Intent intentService = new Intent(context, OutgoingCallIntentService.class);
-//            intentService.setData(Uri.parse("tel:" + number));
-//            context.startService(intentService);
-
-            mStateOutgoingCall = true;
-
-        } else if (action.equals(TelephonyManager.ACTION_PHONE_STATE_CHANGED)) {
-
-            String phoneState = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
-            //Toast.makeText(context, phoneState, Toast.LENGTH_LONG).show();
-
-            Log.v(TAG, "onReceive() " + phoneState);
-
-            if (TelephonyManager.EXTRA_STATE_RINGING.equals(phoneState)) {
-            }
-            else if (TelephonyManager.EXTRA_STATE_OFFHOOK.equals(phoneState)) {
-            }
-            else if (TelephonyManager.EXTRA_STATE_IDLE.equals(phoneState)) {
-                mStateOutgoingCall = false;
-            }
-        }
-
-
-
-        if(intent.getAction().equals("android.intent.action.PHONE_STATE")){
-
-            String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
-
-            if(state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)){
-                Log.d(TAG, "Inside Extra state off hook");
-
-//                Log.d(TAG, intent);
-//                String number = intent.getStringExtra(TelephonyManager.EXTRA_PHONE_NUMBER);
-//                Log.e(TAG, "outgoing number : " + number);
-            }
-
-            else if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)){
-                Log.e(TAG, "Inside EXTRA_STATE_RINGING");
-                String number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
-                Log.e(TAG, "incoming number : " + number);
-            }
-            else if(state.equals(TelephonyManager.EXTRA_STATE_IDLE)){
-                Log.d(TAG, "Inside EXTRA_STATE_IDLE");
-            }
-        }
-
-        */
     }
 
     void showToast(Context context,String message){

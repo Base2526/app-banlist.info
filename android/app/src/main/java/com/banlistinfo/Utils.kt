@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import bolts.Task.delay
+import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.apollographql.apollo3.network.ws.WebSocketNetworkTransport
@@ -40,7 +41,7 @@ open class Utils {
         return isInBackground
     }
 
-    open suspend fun test_apollo(context: Context): Boolean {
+    open fun test_apollo(context: Context): Boolean {
 
         try {
 //            val apolloClient = ApolloClient.Builder()
@@ -84,6 +85,9 @@ open class Utils {
                 println("")
             }
 
+            // Apollo runs query on background thread
+
+
             /*
             lifecycleScope.launch {
 
@@ -115,11 +119,6 @@ open class Utils {
             println(e)
             Log.i("TAG", "")
         }
-
-
-
-
-
         return true;
     }
 }

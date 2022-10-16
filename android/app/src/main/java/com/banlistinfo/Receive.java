@@ -2,13 +2,8 @@ package com.banlistinfo;
 
 import java.util.Date;
 
-enum ReceiveType {
-    PHONE,
-    SMS
-}
-
 public class Receive {
-    private ReceiveType type;
+    private String type;
     private String phoneNumber;
     private Date createdAt;
     private String messages;
@@ -21,11 +16,11 @@ public class Receive {
         this.messages = messages;
     }
 
-    public ReceiveType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(ReceiveType type) {
+    public void setType(String type) {
         this.type = type;
     }
 

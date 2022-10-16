@@ -118,3 +118,7 @@ refer : https://medium.com/android-news/implementing-apollo-client-in-android-st
 https://www.youtube.com/watch?v=0kc0m8eo8hw
 
 /////////////////////////////
+
+./gradlew downloadApolloSchema --endpoint="https://apollo-fullstack-tutorial.herokuapp.com/graphql" --schema="app/src/main/graphql/schema.json"
+
+app/src/main/graphql

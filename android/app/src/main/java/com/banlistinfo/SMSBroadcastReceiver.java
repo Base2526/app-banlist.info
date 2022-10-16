@@ -77,7 +77,7 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
                         ArrayList<Receive> datas=  gson.fromJson(json, listType);;
 
                         Receive receive = new Receive();
-                        receive.setType(ReceiveType.SMS);
+                        receive.setType("SMS");
                         receive.setPhoneNumber(messages[0].getOriginatingAddress());
                         receive.setMessages(messages[0].getMessageBody());
                         receive.setCreatedAt(new Date());
@@ -94,7 +94,7 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
                     }else{
                         try {
                             WritableMap map = Arguments.createMap();
-                            map.putString("type", ReceiveType.SMS.toString());
+                            map.putString("type", "SMS");
 
                             map.putString("phoneNumber", messages[0].getOriginatingAddress());
                             map.putString("messages", messages[0].getMessageBody());

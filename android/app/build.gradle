@@ -320,26 +320,10 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.0"
 
-    // apollo
-//    implementation "com.apollographql.apollo:apollo-gradle-plugin:2.3.1"
-//    implementation "com.apollographql.apollo:apollo-runtime:2.3.1"
-//    implementation "com.apollographql.apollo:apollo-coroutines-support:2.3.1"
-
-
-//    //apollo
-//    implementation "com.apollographql.apollo3:apollo-runtime:3.0.0"
-//    implementation 'com.apollographql.apollo:apollo-android-support:1.0.0'
-// lifecycle
-//    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
-////okhttp3
-//    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
-//    implementation "com.squareup.okhttp3:logging-interceptor:4.8.1"
-
     implementation "com.apollographql.apollo3:apollo-runtime"
-
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.0-alpha02"
-
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.18"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
+    implementation "androidx.preference:preference-ktx:1.2.0"
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
 }
 
 if (isNewArchitectureEnabled()) {
