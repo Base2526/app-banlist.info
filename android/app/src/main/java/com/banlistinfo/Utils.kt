@@ -4,11 +4,17 @@ import android.app.ActivityManager
 import android.app.ActivityManager.RunningAppProcessInfo
 import android.content.Context
 import android.os.Build
+import android.telephony.TelephonyManager
 import android.util.Log
+import com.example.SearchMutation
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.runBlocking
+import java.io.PrintWriter
+import java.io.StringWriter
 
 
-open class Utils {
+object Utils {
     open fun isAppIsInBackground(context: Context): Boolean {
         var isInBackground = true
         val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -31,6 +37,31 @@ open class Utils {
             }
         }
         return isInBackground
+    }
+
+    open fun killCall(context: Context): Boolean {
+        return try {
+            // Get the boring old TelephonyManager
+            val telephonyManager =
+                context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+
+            // Get the getITelephony() method
+            val classTelephony = Class.forName(telephonyManager.javaClass.name)
+            val methodGetITelephony = classTelephony.getDeclaredMethod("getITelephony")
+            // Ignore that the method is supposed to be private
+            methodGetITelephony.isAccessible = true
+            // Invoke getITelephony() to get the ITelephony interface
+            val telephonyInterface = methodGetITelephony.invoke(telephonyManager)
+            // Get the endCall method from ITelephony
+            val telephonyInterfaceClass = Class.forName(telephonyInterface.javaClass.name)
+            val methodEndCall = telephonyInterfaceClass.getDeclaredMethod("endCall")
+            // Invoke endCall()
+            methodEndCall.invoke(telephonyInterface)
+            true
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     open fun test_apollo(context: Context): Boolean {
@@ -66,8 +97,38 @@ open class Utils {
 
 //            GlobalScope.launch { // launch a new coroutine in background and continue
             runBlocking {
+
+
+                val response = try {
+//                    apolloClient(context).query(UserQuery(id="62a2c0cecf7946010d3c743f".toString())).execute()
+
+                    /*
+                    final SignupInput signupInput=SignupInput.builder()
+                .firstName(edtSignUpName.getText().toString())
+                .lastName(edtSignUpLastName.getText().toString())
+                .email(actvSignUpEmail.getText().toString())
+                .password(edtSignUpPassword.getText().toString())
+                .profileImage("dasfasdfasdf.png").build();
+                    */
+
+
+                    apolloClient(context).mutation(SearchMutation(type= "phone", q = "abc")).execute()
+                } catch (e: Exception) {
+//                    println("Exception :$e.stackTraceToString()")
+
+                    val stacktrace = StringWriter().also { e.printStackTrace(PrintWriter(it)) }.toString().trim()
+                    println("Exception caught: $stacktrace")
+                    null
+                }
+
+                println(response?.data)
+                println("")
+
+
+//                val seachMutation = SeachMutation()
+//
 //                val response = try {
-//                    apolloClient(context).query(LaunchesQuery()).execute()
+//                    apolloClient(context).mutation(seachMutation).execute()
 //                } catch (e: Exception) {
 //                    println("")
 //                    null
@@ -113,4 +174,5 @@ open class Utils {
         }
         return true;
     }
+
 }

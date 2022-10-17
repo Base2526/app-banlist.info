@@ -1,0 +1,3 @@
+query Homes($userId: ID, $page: Long, $perPage: Long, $keywordSearch: String, $category: String) {
+    homes(userId: $userId, page: $page, perPage: $perPage, keywordSearch: $keywordSearch, category: $category)
+}

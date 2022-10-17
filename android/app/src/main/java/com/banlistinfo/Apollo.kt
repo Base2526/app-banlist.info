@@ -23,10 +23,15 @@ fun apolloClient(context: Context): ApolloClient {
         .build()
 
     instance = ApolloClient.Builder()
-        .serverUrl("https://apollo-fullstack-tutorial.herokuapp.com/graphql")
-        .webSocketServerUrl("wss://apollo-fullstack-tutorial.herokuapp.com/graphql")
+            .serverUrl("http://157.245.51.177:4000/graphql")
+//        .serverUrl("https://banlist.info/graphql")
+//        .webSocketServerUrl("wss://banlist.info/graphql")
         .okHttpClient(okHttpClient)
         .build()
+
+//    instance = ApolloClient.Builder()
+//        .serverUrl("https://banlist.info/graphql")
+//        .build()
 
     return instance!!
 }
@@ -34,7 +39,7 @@ fun apolloClient(context: Context): ApolloClient {
 private class AuthorizationInterceptor(val context: Context) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request().newBuilder()
-            .addHeader("Authorization", "")
+            .addHeader("Authorization", "xxx")
             .build()
 
         return chain.proceed(request)

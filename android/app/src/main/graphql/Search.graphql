@@ -1,0 +1,3 @@
+mutation Search($type: String!, $q: String!) {
+    search(type: $type, q: $q)
+}

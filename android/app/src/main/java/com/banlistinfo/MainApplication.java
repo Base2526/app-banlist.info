@@ -24,6 +24,9 @@ import com.banlistinfo.banlistinfonativemodule.BanlistInfoNativeModuleModule;
 
 public class MainApplication extends Application implements ReactApplication {
 
+  public String preferenceFileName = "banlistinfo";
+  public String preferenceKey      = "phone-sms";
+
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
         @Override

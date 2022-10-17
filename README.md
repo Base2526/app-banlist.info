@@ -137,6 +137,8 @@ app/src/main/graphql
 
 /////////////////// downloadApolloSchema /////////////////////
 
+./gradlew :app:downloadApolloSchema --endpoint='https://banlist.info/graphql' --schema=app/src/main/graphql/schema.graphqls --insecure
+
 
 /////// android block call //////////////////////////////
 https://pastebin.com/kAzrWvaD
