@@ -14,20 +14,32 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import com.apollographql.apollo3.ApolloCall;
+import com.apollographql.apollo3.ApolloClient;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import kotlin.coroutines.Continuation;
+import kotlin.coroutines.CoroutineContext;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class MainActivity extends ReactActivity {
-
   private static final String TAG = MainActivity.class.getName();
-
-
 
   /**
    * Returns the name of the main component registered from JavaScript. This is used to schedule
@@ -67,8 +79,6 @@ public class MainActivity extends ReactActivity {
       // More on this on https://reactjs.org/blog/2022/03/29/react-v18.html
       return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
     }
-
-
   }
 
   @Override
@@ -98,7 +108,7 @@ public class MainActivity extends ReactActivity {
     ArrayList<Receive> list = new ArrayList<>();
 
     Receive receive = new Receive();
-    receive.setType(ReceiveType.PHONE);
+    receive.setType("PHONE");
     receive.setCreatedAt(new Date());
     receive.setPhoneNumber("0988264820");
 
@@ -106,7 +116,88 @@ public class MainActivity extends ReactActivity {
 
 //    Log.i(TAG,  ">>> " + String.valueOf(list.contains(receive2))  );
 
-    Log.i(TAG, "list");
+//    ApolloClient apolloClient = ApolloClient.builder()
+//            .serverUrl("https://apollo-fullstack-tutorial.herokuapp.com/graphql")
+//            .build();
+//
+//    apolloClient.query(new LaunchesQuery()).execute();
+
+//    AndroidNetworking.post("https://fierce-cove-29863.herokuapp.com/createAnUser")
+//            .addBodyParameter("firstname", "Amit")
+//            .addBodyParameter("lastname", "Shekhar")
+//            .setTag("test")
+//            .setPriority(Priority.MEDIUM)
+//            .build()
+//            .getAsJSONObject(new JSONObjectRequestListener() {
+//              @Override
+//              public void onResponse(JSONObject response) {
+//                // do anything with response
+//              }
+//              @Override
+//              public void onError(ANError error) {
+//                // handle error
+//              }
+//            });
+
+
+
+//    (new Utils()).test_apollo(getApplicationContext(), new Continuation<Object>() {
+//      @Override
+//      public void resumeWith(@NonNull Object o) {
+//        Log.i(TAG, "");
+//      }
+//
+//      @NonNull
+//      @Override
+//      public CoroutineContext getContext() {
+//        Log.i(TAG, "");
+//        return null;
+//      }
+//    });
+
+//    (new Utils()).test_apollo( getContext(), new Continuation<Object>() {
+//      @Override
+//      public void resumeWith(@NonNull Object o) {
+//        Log.i(TAG, "");
+//      }
+//
+//      @NonNull
+//      @Override
+//      public CoroutineContext getContext() {
+//        Log.i(TAG, "");
+//        return null;
+//      }
+//    });
+    Log.i(TAG, "");
+
+
+
+    ////////////////
+    // First, create an `ApolloClient`
+// Replace the serverUrl with your GraphQL endpoint
+//    ApolloClient apolloClient = ApolloClient.builder()
+//            .serverUrl("https://apollo-fullstack-tutorial.herokuapp.com/graphql")
+//            .build();
+
+// Then enqueue your query
+    /*
+    apolloClient.query(new LaunchesQuery())
+            .enqueue(new ApolloCall.Callback<LaunchesQuery.Data>() {
+              @Override
+              public void onResponse(@NotNull Response<LaunchesQuery.Data> response) {
+//                Log.e("Apollo", "Launch site: " + response.getData().launch.site);
+              }
+
+              @Override
+              public void onFailure(@NotNull ApolloException e) {
+                Log.e("Apollo", "Error", e);
+              }
+            });
+
+    */
+    ///////////////
+
+
   }
 
   // You can do the assignment inside onAttach or onCreate, i.e, before the activity is displayed

@@ -2,12 +2,12 @@
 
 package com.banlistinfo.banlistinfonativemodule;
 
-
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import androidx.annotation.Nullable;
 
+import com.banlistinfo.MainApplication;
 import com.banlistinfo.Receive;
 import com.banlistinfo.Window;
 import com.facebook.react.bridge.Callback;
@@ -57,8 +57,6 @@ public class BanlistInfoNativeModuleModule extends ReactContextBaseJavaModule {
     public void exampleMethod () {
         // An example native method that you will expose to React
         // https://facebook.github.io/react-native/docs/native-modules-android.html#the-toast-module
-
-
     }
 
     @ReactMethod
@@ -69,7 +67,7 @@ public class BanlistInfoNativeModuleModule extends ReactContextBaseJavaModule {
         // create an instance of Window class
         // and display the content on screen
         Window window=new Window(reactContext);
-        window.open("MyBridgeMethod");
+        window.open("PHONE", "MyBridgeMethod");
 
         String newString =  stringFromJS.replace("JavaScriptCode","Java  Code");
         callBack.invoke(newString);
@@ -82,13 +80,15 @@ public class BanlistInfoNativeModuleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public static void getPhoneList(Callback callBack){
+    public static void getDataList(Callback callBack){
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences(reactContext);
-        Gson gson = new Gson();
-        String json = prefs.getString("PHONE_LIST", null);
-        Type listType = new TypeToken<ArrayList<Receive>>() {}.getType();
-//        return gson.fromJson(json, listType);
+        SharedPreferences sharedPreferences =  reactContext.getSharedPreferences((new MainApplication()).preferenceFileName, 0);
+
+        String json = "";
+        if (sharedPreferences.contains((new MainApplication()).preferenceKey)) {
+            json = sharedPreferences.getString((new MainApplication()).preferenceKey, "");
+        }
 
         callBack.invoke(json);
     }

@@ -4,8 +4,10 @@ buildscript {
     ext {
         buildToolsVersion = "31.0.0"
         minSdkVersion = 21
-        compileSdkVersion = 31
-        targetSdkVersion = 31
+        compileSdkVersion = 33
+        targetSdkVersion = 33
+
+        kotlinVersion = "1.6.0"
 
         if (System.properties['os.arch'] == "aarch64") {
             // For M1 Users we need to use the NDK 24 which added support for aarch64
@@ -20,11 +22,18 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.2.1")
+        classpath('com.android.tools.build:gradle:7.3.0')
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("de.undercouch:gradle-download-task:5.0.1")
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${project.ext.kotlinVersion}"
+
+        // apollo
+//        classpath("com.apollographql.apollo:apollo-gradle-plugin:2.3.1")
+
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.4-3"
     }
 }
 
@@ -49,3 +58,8 @@ allprojects {
         maven { url 'https://www.jitpack.io' }
     }
 }
+
+//tasks.register("downloadSchema", com.apollographql.apollo.gradle.internal.ApolloDownloadSchemaTask) {
+//    endpoint = "https://apollo-fullstack-tutorial.herokuapp.com/"
+//    schemaRelativeToProject = "src/main/graphql/net/sample/schema.json"
+//}

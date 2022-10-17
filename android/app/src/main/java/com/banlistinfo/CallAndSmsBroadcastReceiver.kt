@@ -1,0 +1,187 @@
+package com.banlistinfo
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.provider.Telephony
+import android.telephony.TelephonyManager
+import android.util.Log
+import com.facebook.react.ReactApplication
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.text.Format
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+
+
+class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
+    private val TAG = CallAndSmsBroadcastReceiver::class.java.name
+
+//    private var preferenceFileName = "banlistinfo"
+//    private var preferenceKey = "phone-sms"
+
+    override fun onReceive(context: Context?, intent: Intent?) {
+        println("$TAG onReceive: ${intent?.action}")
+
+        when(intent?.action){
+            Telephony.Sms.Intents.SMS_RECEIVED_ACTION ->{
+                val bundle = intent.extras
+                val format = bundle?.getString("format")
+
+                if (bundle != null) {
+
+                    val msgFromIntent = Telephony.Sms.Intents.getMessagesFromIntent(intent)
+                    msgFromIntent.forEachIndexed { index, smsMessage ->
+                        Log.i(TAG, "onReceive: $index")
+
+                        Log.i(TAG, "Address: ${smsMessage.originatingAddress}")
+                        Log.i(TAG, "Body: ${smsMessage.displayMessageBody}")
+
+                        if (context?.let { Utils.isAppIsInBackground(it) } == true) {
+                            val window = Window(context)
+                            window.open("SMS", smsMessage.originatingAddress + " : " + smsMessage.displayMessageBody)
+
+                            /////////////////////////////
+
+                            if (context != null) {
+                                // GET
+                                val gson = Gson()
+                                var datas = ArrayList<Receive?>()
+
+                                val sharedPreferences = context.getSharedPreferences(MainApplication().preferenceFileName, 0)
+                                if (sharedPreferences.contains(MainApplication().preferenceKey)) {
+                                    val json = sharedPreferences.getString(MainApplication().preferenceKey, "")
+                                    datas = gson.fromJson<ArrayList<Receive?>>(json, object : TypeToken<ArrayList<Receive?>?>() {}.type)
+                                }
+
+                                val receive = Receive()
+                                receive.type = "SMS"
+                                receive.phoneNumber = smsMessage.originatingAddress
+                                receive.messages = smsMessage.displayMessageBody
+                                receive.createdAt = Date()
+
+                                datas.add(receive)
+
+                                // SAVE
+                                val sharedPreferencesEditor = sharedPreferences.edit()
+                                sharedPreferencesEditor.putString(MainApplication().preferenceKey, gson.toJson(datas))
+                                sharedPreferencesEditor.apply()
+                            }
+
+                            ///////////////////////////////
+                        } else {
+                            try {
+                                val map = Arguments.createMap()
+                                map.putString("type", "SMS")
+                                map.putString("phoneNumber", smsMessage.originatingAddress)
+                                map.putString("messages", smsMessage.displayMessageBody)
+                                val formatter: Format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                                val createdAt = formatter.format(Date())
+                                map.putString("createdAt", createdAt)
+
+                                // context - is the context you get from broadcastreceivers onReceive
+                                val rnApp = context?.applicationContext as ReactApplication
+                                rnApp.reactNativeHost.reactInstanceManager
+                                    .currentReactContext?.getJSModule(RCTDeviceEventEmitter::class.java)
+                                    ?.emit("rnApp", map)
+                            } catch (e: java.lang.Exception) {
+                                Log.e("ReactNative", "Caught Exception: " + e.message)
+                            }
+                        }
+                    }
+                }
+            }
+            "android.intent.action.PHONE_STATE" ->{
+                when(intent?.getStringExtra(TelephonyManager.EXTRA_STATE)){
+                    TelephonyManager.EXTRA_STATE_OFFHOOK ->{
+                        println("EXTRA_STATE_OFFHOOK : Call started")
+
+                    }
+                    TelephonyManager.EXTRA_STATE_IDLE ->{
+                        println("EXTRA_STATE_IDLE : Call ended")
+                    }
+                    TelephonyManager.EXTRA_STATE_RINGING ->{
+                        println("EXTRA_STATE_RINGING : Call Ringing")
+
+                        val phoneNumber = intent?.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)
+                        if (phoneNumber != null) {
+                            println("Incoming call...")
+                            println(phoneNumber)
+
+//                            if (context != null) {
+//                                Utils.test_apollo(context)
+//                            };
+
+                            if (context?.let { Utils.isAppIsInBackground(it) } == true) {
+//                                val window = context?.let { Window(it) }
+//                                window?.open(phoneNumber)
+
+
+//                                Utils.killCall(context);
+
+                                try {
+                                    Window(context)?.open("PHONE", phoneNumber)
+                                } catch (e: Exception) {
+                                    Log.e("ReactNative", "Caught Exception: " + e.message)
+                                }
+
+                                if (context != null) {
+                                    // GET
+                                    val gson = Gson()
+                                    var datas = ArrayList<Receive?>()
+
+                                    val sharedPreferences = context.getSharedPreferences(MainApplication().preferenceFileName, 0)
+                                    if (sharedPreferences.contains(MainApplication().preferenceKey)) {
+                                        val json = sharedPreferences.getString(MainApplication().preferenceKey, "")
+                                        datas = gson.fromJson<ArrayList<Receive?>>(json, object : TypeToken<ArrayList<Receive?>?>() {}.type)
+                                    }
+
+                                    val receive = Receive()
+                                    receive.type = "PHONE"
+                                    receive.phoneNumber = phoneNumber
+                                    receive.messages = ""
+                                    receive.createdAt = Date()
+
+                                    datas.add(receive)
+
+                                    // SAVE
+                                    val sharedPreferencesEditor = sharedPreferences.edit()
+                                    sharedPreferencesEditor.putString(MainApplication().preferenceKey, gson.toJson(datas))
+                                    sharedPreferencesEditor.apply()
+                                }
+                            } else {
+                                try {
+                                    val map = Arguments.createMap()
+                                    map.putString("type", "PHONE")
+                                    map.putString("phoneNumber", phoneNumber)
+                                    map.putString("messages", "")
+                                    val formatter: Format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                                    val createdAt = formatter.format(Date())
+                                    map.putString("createdAt", createdAt)
+
+                                    // context - is the context you get from broadcastreceivers onReceive
+                                    val rnApp = context?.applicationContext as ReactApplication
+                                    rnApp.reactNativeHost.reactInstanceManager
+                                        ?.currentReactContext?.getJSModule(RCTDeviceEventEmitter::class.java)
+                                        ?.emit("rnApp", map)
+                                } catch (e: Exception) {
+                                    Log.e("ReactNative", "Caught Exception: " + e.message)
+                                }
+                            }
+                        }
+                    }
+                    else -> {
+                        println("EXTRA_STATE : Other case")
+                    }
+                }
+            }
+            else ->{
+                println("Other case")
+            }
+        }
+    }
+
+}
