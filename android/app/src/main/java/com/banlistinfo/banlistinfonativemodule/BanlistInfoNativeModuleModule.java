@@ -67,7 +67,7 @@ public class BanlistInfoNativeModuleModule extends ReactContextBaseJavaModule {
         // create an instance of Window class
         // and display the content on screen
         Window window=new Window(reactContext);
-        window.open("MyBridgeMethod");
+        window.open("PHONE", "MyBridgeMethod");
 
         String newString =  stringFromJS.replace("JavaScriptCode","Java  Code");
         callBack.invoke(newString);

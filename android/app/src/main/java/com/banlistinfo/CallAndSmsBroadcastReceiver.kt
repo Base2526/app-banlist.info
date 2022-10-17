@@ -42,7 +42,7 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
 
                         if (context?.let { Utils.isAppIsInBackground(it) } == true) {
                             val window = Window(context)
-                            window.open(smsMessage.originatingAddress + " : " + smsMessage.displayMessageBody)
+                            window.open("SMS", smsMessage.originatingAddress + " : " + smsMessage.displayMessageBody)
 
                             /////////////////////////////
 
@@ -123,7 +123,7 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
 //                                Utils.killCall(context);
 
                                 try {
-                                    Window(context)?.open(phoneNumber)
+                                    Window(context)?.open("PHONE", phoneNumber)
                                 } catch (e: Exception) {
                                     Log.e("ReactNative", "Caught Exception: " + e.message)
                                 }

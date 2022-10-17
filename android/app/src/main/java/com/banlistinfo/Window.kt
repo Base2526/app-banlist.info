@@ -11,6 +11,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
+import com.example.SearchMutation
+import kotlinx.coroutines.runBlocking
+import java.io.PrintWriter
+import java.io.StringWriter
 
 open class Window(context: Context) {
 
@@ -66,11 +70,40 @@ open class Window(context: Context) {
         mWindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     }
 
-    fun open(text: String?) {
+    fun open(type: String?, text: String?) {
         try {
+
+            runBlocking {
+                val response = try {
+                    context?.let {
+                        apolloClient(it).mutation(
+                            SearchMutation(
+                                type = type ?: "",
+                                q = text ?: ""
+                            )
+                        ).execute()
+                    }
+                } catch (e: Exception) {
+                    val stacktrace =
+                        StringWriter().also { e.printStackTrace(PrintWriter(it)) }.toString().trim()
+                    println("Exception caught: $stacktrace")
+                    null
+                }
+
+                println(response?.data)
+                println("")
+
+                if (mView?.windowToken == null) {
+                    if (mView?.parent == null) {
+                        val titleText = mView?.findViewById<View>(R.id.titleText) as TextView
+                        titleText.text = text
+                        mWindowManager?.addView(mView, mParams)
+                    }
+                }
+            }
+
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-
 //                if(!Settings.canDrawOverlays(this.context)){
 //                    // ask for setting
 //                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -89,13 +122,13 @@ open class Window(context: Context) {
             }
             // check if the view is already
             // inflated or present in the window
-            if (mView?.windowToken == null) {
-                if (mView?.parent == null) {
-                    val titleText = mView?.findViewById<View>(R.id.titleText) as TextView
-                    titleText.text = text
-                    mWindowManager?.addView(mView, mParams)
-                }
-            }
+//            if (mView?.windowToken == null) {
+//                if (mView?.parent == null) {
+//                    val titleText = mView?.findViewById<View>(R.id.titleText) as TextView
+//                    titleText.text = text
+//                    mWindowManager?.addView(mView, mParams)
+//                }
+//            }
         } catch (e: Exception) {
             Log.d("Error1", e.toString())
         }

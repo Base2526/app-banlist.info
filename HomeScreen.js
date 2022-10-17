@@ -57,12 +57,12 @@ const HomeScreen = (props) => {
   useEffect(() => {
 
     banlistInfoModule.getDataList((values)=>{
-      let newValues = JSON.parse(values)
-      // _.map(newValues, (value)=>{
-      //   console.log("value :", value) 
-      // })
 
-      setDatas(newValues)
+      console.log("getDataList : ", values)
+
+      if(!_.isEmpty(values)){
+        setDatas(JSON.parse(values))
+      }
     })
 
    
