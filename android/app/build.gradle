@@ -12,6 +12,8 @@ plugins {
 
 }
 
+//apply plugin: 'kotlin-kapt'
+
 import com.android.build.OutputFile
 import org.apache.tools.ant.taskdefs.condition.Os
 
@@ -324,7 +326,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
     implementation "androidx.preference:preference-ktx:1.2.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
-
 }
 
 if (isNewArchitectureEnabled()) {

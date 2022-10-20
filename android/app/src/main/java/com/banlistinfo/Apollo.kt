@@ -9,8 +9,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
-
-
 private var instance: ApolloClient? = null
 
 fun apolloClient(context: Context): ApolloClient {
@@ -22,16 +20,19 @@ fun apolloClient(context: Context): ApolloClient {
         .addInterceptor(AuthorizationInterceptor(context))
         .build()
 
-    instance = ApolloClient.Builder()
-            .serverUrl("http://157.245.51.177:4000/graphql")
-//        .serverUrl("https://banlist.info/graphql")
-//        .webSocketServerUrl("wss://banlist.info/graphql")
-        .okHttpClient(okHttpClient)
-        .build()
+    val sharedPreferences = context.getSharedPreferences(MainApplication().preferenceFileName, 0)
+    if (sharedPreferences.contains(MainApplication().HOST_GRAPHAL)) {
+        val hostGraphal = sharedPreferences.getString(MainApplication().HOST_GRAPHAL, "")
 
-//    instance = ApolloClient.Builder()
-//        .serverUrl("https://banlist.info/graphql")
-//        .build()
+        instance = hostGraphal?.let {
+            ApolloClient.Builder()
+                .serverUrl(it)
+        //      .serverUrl("https://banlist.info/graphql")
+        //      .webSocketServerUrl("wss://banlist.info/graphql")
+                .okHttpClient(okHttpClient)
+                .build()
+        }
+    }
 
     return instance!!
 }

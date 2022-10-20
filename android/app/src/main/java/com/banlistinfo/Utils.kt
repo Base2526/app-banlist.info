@@ -1,15 +1,23 @@
 package com.banlistinfo
 
-import android.app.ActivityManager
+import android.app.*
 import android.app.ActivityManager.RunningAppProcessInfo
 import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
+import android.content.Intent
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
+import android.widget.RemoteViews
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat.getSystemService
 import com.example.SearchMutation
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.runBlocking
+import okhttp3.internal.notify
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -175,4 +183,48 @@ object Utils {
         return true;
     }
 
+//    https://www.geeksforgeeks.org/notifications-in-kotlin/
+//    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    open fun local_noti(context: Context){
+        var notificationChannel: NotificationChannel
+        var notificationManager= context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        var builder: Notification.Builder
+        val channelId = "12345"
+        val description = "Test Notification"
+
+    /*
+    *  val telephonyManager =
+                context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+    * */
+
+        try {
+
+            val intent = Intent(context, afterNotification::class.java)
+            val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notificationChannel = NotificationChannel(channelId, description, NotificationManager .IMPORTANCE_HIGH)
+                notificationChannel.lightColor = Color.BLUE
+                notificationChannel.enableVibration(true)
+                notificationManager.createNotificationChannel(notificationChannel)
+                builder = Notification.Builder(context, channelId).setContentTitle("NOTIFICATION USING " +
+                        "KOTLIN").setContentText("Test Notification").setSmallIcon(R.drawable.ic_launcher_foreground).setLargeIcon(
+                    BitmapFactory.decodeResource(context.resources, R.drawable
+                        .ic_launcher_background)).setContentIntent(pendingIntent)
+            }else{
+                val contentView = RemoteViews(context.packageName, R.layout.activity_after_notification)
+                builder = Notification.Builder(context)
+                    .setContent(contentView)
+                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.ic_launcher_foreground))
+                    .setContentIntent(pendingIntent)
+            }
+
+            notificationManager.notify((1000..10000).random(), builder.build())
+        }catch (e : Exception){
+            val stacktrace = StringWriter().also { e.printStackTrace(PrintWriter(it)) }.toString().trim()
+            println("Exception caught: $stacktrace")
+        }
+
+
+    }
 }

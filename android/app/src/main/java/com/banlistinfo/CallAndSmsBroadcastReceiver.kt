@@ -1,11 +1,13 @@
 package com.banlistinfo
 
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
 import android.telephony.TelephonyManager
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
@@ -40,6 +42,10 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
                         Log.i(TAG, "Address: ${smsMessage.originatingAddress}")
                         Log.i(TAG, "Body: ${smsMessage.displayMessageBody}")
 
+                        if (context != null) {
+                            Utils.local_noti(context)
+                        }
+
                         if (context?.let { Utils.isAppIsInBackground(it) } == true) {
                             val window = Window(context)
                             window.open("SMS", smsMessage.originatingAddress + " : " + smsMessage.displayMessageBody)
@@ -52,13 +58,13 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
                                 var datas = ArrayList<Receive?>()
 
                                 val sharedPreferences = context.getSharedPreferences(MainApplication().preferenceFileName, 0)
-                                if (sharedPreferences.contains(MainApplication().preferenceKey)) {
-                                    val json = sharedPreferences.getString(MainApplication().preferenceKey, "")
+                                if (sharedPreferences.contains(MainApplication().sms)) {
+                                    val json = sharedPreferences.getString(MainApplication().sms, "")
                                     datas = gson.fromJson<ArrayList<Receive?>>(json, object : TypeToken<ArrayList<Receive?>?>() {}.type)
                                 }
 
                                 val receive = Receive()
-                                receive.type = "SMS"
+                                receive.type = MainApplication().sms
                                 receive.phoneNumber = smsMessage.originatingAddress
                                 receive.messages = smsMessage.displayMessageBody
                                 receive.createdAt = Date()
@@ -67,7 +73,7 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
 
                                 // SAVE
                                 val sharedPreferencesEditor = sharedPreferences.edit()
-                                sharedPreferencesEditor.putString(MainApplication().preferenceKey, gson.toJson(datas))
+                                sharedPreferencesEditor.putString(MainApplication().sms, gson.toJson(datas))
                                 sharedPreferencesEditor.apply()
                             }
 
@@ -75,7 +81,7 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
                         } else {
                             try {
                                 val map = Arguments.createMap()
-                                map.putString("type", "SMS")
+                                map.putString("type", MainApplication().sms)
                                 map.putString("phoneNumber", smsMessage.originatingAddress)
                                 map.putString("messages", smsMessage.displayMessageBody)
                                 val formatter: Format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -111,6 +117,10 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
                             println("Incoming call...")
                             println(phoneNumber)
 
+                            if (context != null) {
+                                Utils.local_noti(context)
+                            }
+
 //                            if (context != null) {
 //                                Utils.test_apollo(context)
 //                            };
@@ -134,13 +144,13 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
                                     var datas = ArrayList<Receive?>()
 
                                     val sharedPreferences = context.getSharedPreferences(MainApplication().preferenceFileName, 0)
-                                    if (sharedPreferences.contains(MainApplication().preferenceKey)) {
-                                        val json = sharedPreferences.getString(MainApplication().preferenceKey, "")
+                                    if (sharedPreferences.contains(MainApplication().callLogs)) {
+                                        val json = sharedPreferences.getString(MainApplication().callLogs, "")
                                         datas = gson.fromJson<ArrayList<Receive?>>(json, object : TypeToken<ArrayList<Receive?>?>() {}.type)
                                     }
 
                                     val receive = Receive()
-                                    receive.type = "PHONE"
+                                    receive.type = MainApplication().callLogs
                                     receive.phoneNumber = phoneNumber
                                     receive.messages = ""
                                     receive.createdAt = Date()
@@ -149,13 +159,13 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
 
                                     // SAVE
                                     val sharedPreferencesEditor = sharedPreferences.edit()
-                                    sharedPreferencesEditor.putString(MainApplication().preferenceKey, gson.toJson(datas))
+                                    sharedPreferencesEditor.putString(MainApplication().callLogs, gson.toJson(datas))
                                     sharedPreferencesEditor.apply()
                                 }
                             } else {
                                 try {
                                     val map = Arguments.createMap()
-                                    map.putString("type", "PHONE")
+                                    map.putString("type", MainApplication().callLogs)
                                     map.putString("phoneNumber", phoneNumber)
                                     map.putString("messages", "")
                                     val formatter: Format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")

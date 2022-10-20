@@ -2,8 +2,10 @@
 
 package com.banlistinfo.banlistinfonativemodule;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -17,7 +19,10 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -60,6 +65,29 @@ public class BanlistInfoNativeModuleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void initConfigs(String configs, Callback callBack) {
+        Log.i("initConfigs", configs);
+
+        SharedPreferences sharedPreferences = reactContext.getSharedPreferences(
+                (new MainApplication()).preferenceFileName, Context.MODE_PRIVATE);
+        try{
+            JSONObject configsJson = new JSONObject(configs);
+
+            if (configsJson.has("HOST_GRAPHAL")) {
+                SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+                sharedPreferencesEditor.putString((new MainApplication()).HOST_GRAPHAL, configsJson.getString("HOST_GRAPHAL"));
+                sharedPreferencesEditor.apply();
+            }
+
+            Log.i("TAG", "");
+        }catch (Exception e){
+            Log.e("TAG", e.toString());
+        }
+
+        callBack.invoke("ok");
+    }
+
+    @ReactMethod
     public void MyBridgeMethod(String stringFromJS, Callback callBack){
         //Replace the JavaScriptCode with JavaCode to mimic some change from Java Code.
         System.out.println("MyBridgeMethod :"+ stringFromJS);
@@ -80,14 +108,28 @@ public class BanlistInfoNativeModuleModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public static void getDataList(Callback callBack){
+    public static void getCallLogs(Callback callBack){
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences(reactContext);
         SharedPreferences sharedPreferences =  reactContext.getSharedPreferences((new MainApplication()).preferenceFileName, 0);
 
         String json = "";
-        if (sharedPreferences.contains((new MainApplication()).preferenceKey)) {
-            json = sharedPreferences.getString((new MainApplication()).preferenceKey, "");
+        if (sharedPreferences.contains((new MainApplication()).callLogs)) {
+            json = sharedPreferences.getString((new MainApplication()).callLogs, "");
+        }
+
+        callBack.invoke(json);
+    }
+
+    @ReactMethod
+    public static void getSMS(Callback callBack){
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences(reactContext);
+        SharedPreferences sharedPreferences =  reactContext.getSharedPreferences((new MainApplication()).preferenceFileName, 0);
+
+        String json = "";
+        if (sharedPreferences.contains((new MainApplication()).sms)) {
+            json = sharedPreferences.getString((new MainApplication()).sms, "");
         }
 
         callBack.invoke(json);

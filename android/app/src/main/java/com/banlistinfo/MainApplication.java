@@ -25,7 +25,11 @@ import com.banlistinfo.banlistinfonativemodule.BanlistInfoNativeModuleModule;
 public class MainApplication extends Application implements ReactApplication {
 
   public String preferenceFileName = "banlistinfo";
-  public String preferenceKey      = "phone-sms";
+
+  public String callLogs      = "call-logs";
+  public String sms           = "sms";
+
+  public String HOST_GRAPHAL  = "HOST_GRAPHAL";
 
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
