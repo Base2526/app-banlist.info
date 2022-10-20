@@ -1,21 +1,12 @@
-// How to Detect Call States in React Native App
-// https://aboutreact.com/detect-call-states/
-
-//Import React
 import React, { useState, useEffect, useLayoutEffect } from "react";
-
-//Import required component
 import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
-  Linking,
-  FlatList,
-  SafeAreaView,
-  Image,
+  Platform,
   Alert,
-  Button
+  Button,
+  NativeModules
 } from "react-native";
 import BackgroundTimer from 'react-native-background-timer';
 
@@ -29,10 +20,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
-import HomeScreen from './HomeScreen'
+import HomeTab from './HomeTab'
+import CallLogsTab from './CallLogsTab'
+import SmsTab from './SmsTab'
 import SearchScreen from './SearchScreen'
 
 import SettingScreen from "./SettingScreen"
+
+import {HOST_GRAPHAL} from "./constants"
 
 // const HomeScreen = ({ navigation }) => {
 //   return (
@@ -90,7 +85,7 @@ const HomeStackScreen =({navigation, route}) => {
         // navigation.setOptions({tabBarVisible: true});
     // }
 
-    console.log("HomeStackScreen :", routeName)
+    // console.log("HomeStackScreen :", routeName)
   }, [navigation, route]);
 
   return (
@@ -104,7 +99,7 @@ const HomeStackScreen =({navigation, route}) => {
         >
         <HomeStack.Screen
           name="home"
-          component={HomeScreen} 
+          component={HomeTab} 
           options={{  
                       headerTitle: ' Home ', 
                       // headerStyle: {
@@ -130,6 +125,24 @@ const HomeStackScreen =({navigation, route}) => {
           //             //   </TouchableOpacity>
                     
           //             // )
+          }}
+        />
+
+        {/* CallLogsTab */}
+
+        <HomeStack.Screen
+          name="calllogs"
+          component={CallLogsTab}
+          options={{  
+            headerTitle: 'Call Logs', 
+          }}
+        />
+
+      <HomeStack.Screen
+          name="sms"
+          component={SmsTab}
+          options={{  
+            headerTitle: 'SMS', 
           }}
         />
         <HomeStack.Screen
@@ -198,6 +211,42 @@ const HomeStackScreen =({navigation, route}) => {
   );
 }
 
+const CallLogsStackScreen =({navigation, route}) => {
+  useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route);
+  }, [navigation, route]);
+
+  return (
+    <HomeStack.Navigator screenOptions={{ }} >
+        <HomeStack.Screen
+          name="calllogs"
+          component={CallLogsTab}
+          options={{  
+            headerTitle: 'Call Logs', 
+          }}
+        />
+    </HomeStack.Navigator>
+  );
+}
+
+const SMSStackScreen =({navigation, route}) => {
+  useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route);
+  }, [navigation, route]);
+
+  return (
+    <HomeStack.Navigator screenOptions={{}}>
+      <HomeStack.Screen
+          name="sms"
+          component={SmsTab}
+          options={{  
+            headerTitle: 'SMS', 
+          }}
+        />
+    </HomeStack.Navigator>
+  );
+}
+
 const SettingStackScreen =({navigation, route}) => {
   useLayoutEffect(() => {
     const routeName = getFocusedRouteNameFromRoute(route);
@@ -215,7 +264,7 @@ const SettingStackScreen =({navigation, route}) => {
         // navigation.setOptions({tabBarVisible: true});
     // }
 
-    console.log("HomeStackScreen :", routeName)
+    // console.log("HomeStackScreen :", routeName)
   }, [navigation, route]);
 
   return (
@@ -279,6 +328,9 @@ query Query($userId: ID, $page: Long, $perPage: Long, $keywordSearch: String, $c
 const Tab = createBottomTabNavigator();
 
 const App = () => {
+
+  const banlistInfoModule = NativeModules.BanlistInfoNativeModule
+
   //to keep callDetector reference
   let callDetector = undefined;
 
@@ -300,19 +352,25 @@ const App = () => {
   // 
 
   useEffect(()=>{
+    if (Platform.OS === 'android') {
+
+      let configs = {"HOST_GRAPHAL": "http://"+ HOST_GRAPHAL +"/graphql"}
+
+      banlistInfoModule.initConfigs(JSON.stringify(configs),(result)=>{
+        console.log(result)
+      })
+    }
+    // console.log("App useEffect : ", HOST_GRAPHAL)
+  }, [])
+
+  useEffect(()=>{
     setText(data)
   }, [data])
 
   const callFriendTapped = () => {
     // Linking.openURL("tel:5555555555").catch((err) => {
     //   console.log(err);
-    // });
-
-
-    /*
-    
-    */
-    
+    // });    
   };
 
   const startStopListener = () => {
@@ -464,6 +522,37 @@ const App = () => {
         <Tab.Screen 
           name="Home" 
           component={HomeStackScreen} 
+          options={({ route }) => ({
+            tabBarBadge: 3,
+            tabBarStyle: ((route) => {
+              const routeName = getFocusedRouteNameFromRoute(route) ?? ""
+              console.log(routeName)
+              if (routeName === 'search') {
+                return { display: "none" }
+              }
+              return
+            })(route),
+          })}/>
+
+        <Tab.Screen 
+          name="Call Logs" 
+          component={CallLogsStackScreen} 
+          options={({ route }) => ({
+            tabBarBadge: 3,
+            tabBarStyle: ((route) => {
+              const routeName = getFocusedRouteNameFromRoute(route) ?? ""
+              console.log(routeName)
+              if (routeName === 'search') {
+                return { display: "none" }
+              }
+              return
+            })(route),
+          })}/>
+
+          {/* SMSStackScreen */}
+        <Tab.Screen 
+          name="SMS" 
+          component={SMSStackScreen} 
           options={({ route }) => ({
             tabBarBadge: 3,
             tabBarStyle: ((route) => {

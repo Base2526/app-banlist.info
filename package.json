@@ -25,7 +25,7 @@
     "react-native": "0.70.1",
     "react-native-background-timer": "^2.4.1",
     "react-native-call-detection": "^1.9.0",
-    "react-native-call-log": "^2.1.2",
+    "react-native-config": "^1.4.11",
     "react-native-create-bridge": "^2.0.1",
     "react-native-gesture-handler": "^2.6.2",
     "react-native-permissions": "^3.6.1",
