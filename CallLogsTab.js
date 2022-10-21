@@ -14,12 +14,39 @@ import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
 import _ from "lodash"
 
 const CallLogsTab = (props) => {
+    const banlistInfoModule = NativeModules.BanlistInfoNativeModule
+
+    useEffect(() => {
+        if (Platform.OS === 'android') {
+          banlistInfoModule.getCallLogs((values)=>{
+            console.log("CallLogsTab : getCallLogs : ", values)
+    
+            if(!_.isEmpty(values)){
+            //   setDatas(JSON.parse(values))
+            }
+          })
+        }
+    })
+
     return (
         <View>
-            <Text>CallLogsTab</Text>
+            <Text style={styles.item}>CallLogsTab</Text>
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    mainScreen: {
+      flex: 1,      
+    },
+    name: {
+      fontSize: 20,
+    },
+    item: {
+      color: "#000"
+    }
+});
+
 const mapStateToProps = (state, ownProps) => {
     console.log("mapStateToProps  :", state)
     return {

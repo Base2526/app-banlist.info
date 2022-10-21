@@ -6,7 +6,9 @@ import {
   Platform,
   Alert,
   Button,
-  NativeModules
+  NativeModules,
+  TouchableOpacity,
+  DeviceEventEmitter,
 } from "react-native";
 import BackgroundTimer from 'react-native-background-timer';
 
@@ -20,6 +22,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import Ionicons from 'react-native-vector-icons/Ionicons'
+import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
+
 import HomeTab from './HomeTab'
 import CallLogsTab from './CallLogsTab'
 import SmsTab from './SmsTab'
@@ -28,6 +34,7 @@ import SearchScreen from './SearchScreen'
 import SettingScreen from "./SettingScreen"
 
 import {HOST_GRAPHAL} from "./constants"
+import _ from "lodash";
 
 // const HomeScreen = ({ navigation }) => {
 //   return (
@@ -112,19 +119,18 @@ const HomeStackScreen =({navigation, route}) => {
                       //     color="#fff"
                       //   />
                       // ),
-          //             // headerShown: true, 
-          //             // headerBackTitle: 'Back', 
-          //             // // headerMode: "screen",
-          //             // headerRight: () => (
-          //             //   <TouchableOpacity 
-          //             //     style={{ marginHorizontal: 10 }}
-          //             //     onPress={()=>{
-          //             //       navigation.navigate('search')
-          //             //     }}>
-          //             //     <Ionicons name="search-outline" size={28}  />
-          //             //   </TouchableOpacity>
-                    
-          //             // )
+                      // headerShown: true, 
+                      // headerBackTitle: 'Back', 
+                      // // headerMode: "screen",
+                      headerRight: () => (
+                        <TouchableOpacity 
+                          style={{ marginHorizontal: 10 }}
+                          onPress={()=>{
+                            navigation.navigate('search')
+                          }}>
+                          <Ionicons name="search" size={28} color="#000" />
+                        </TouchableOpacity>
+                      )
           }}
         />
 
@@ -314,6 +320,12 @@ query Query($userId: ID, $page: Long, $perPage: Long, $keywordSearch: String, $c
 }
 `;
 
+const GET_HOMES = gql`
+query Homes($userId: ID, $page: Long, $perPage: Long, $keywordSearch: String, $category: String) {
+  homes(userId: $userId, page: $page, perPage: $perPage, keywordSearch: $keywordSearch, category: $category)
+}
+`;
+
 // const AppNavigator = createStackNavigator({
 //   Home: {
 //     screen: Home
@@ -349,7 +361,17 @@ const App = () => {
   });
   // console.log("data >> :", loading, error, data)
 
+  
+
   // 
+
+  
+  // ค่อยรับค่าส่งมากจาก android & ios native
+  DeviceEventEmitter.addListener('rnApp', (data) => {
+    console.log("DeviceEventEmitter > rnApp :", [...datas, data])
+
+    // setDatas([...datas, data])
+  });
 
   useEffect(()=>{
     if (Platform.OS === 'android') {
@@ -359,6 +381,18 @@ const App = () => {
       banlistInfoModule.initConfigs(JSON.stringify(configs),(result)=>{
         console.log(result)
       })
+  
+      requestMultiple([PERMISSIONS.ANDROID.CALL_PHONE, 
+                        PERMISSIONS.ANDROID.READ_PHONE_STATE,
+                        PERMISSIONS.ANDROID.READ_CALL_LOG,
+                        PERMISSIONS.ANDROID.RECEIVE_SMS,
+                    ]).then((statuses) => {
+        console.log('CALL_PHONE', statuses[PERMISSIONS.ANDROID.CALL_PHONE]);
+        console.log('READ_PHONE_STATE', statuses[PERMISSIONS.ANDROID.READ_PHONE_STATE]);
+        console.log('READ_CALL_LOG', statuses[PERMISSIONS.ANDROID.READ_CALL_LOG]);
+        console.log('RECEIVE_SMS', statuses[PERMISSIONS.ANDROID.RECEIVE_SMS]);
+      });
+  
     }
     // console.log("App useEffect : ", HOST_GRAPHAL)
   }, [])
@@ -366,155 +400,8 @@ const App = () => {
   useEffect(()=>{
     setText(data)
   }, [data])
-
-  const callFriendTapped = () => {
-    // Linking.openURL("tel:5555555555").catch((err) => {
-    //   console.log(err);
-    // });    
-  };
-
-  const startStopListener = () => {
-    if (isStart) {
-      console.log("Stop");
-      callDetector && callDetector.dispose();
-    } else {
-      console.log("Start");
-      callDetector = new CallDetectorManager(
-        (event, number) => {
-          console.log("event -> ", event + (number ? " - " + number : ""));
-          var updatedCallStates = callStates;
-          updatedCallStates.push(event + (number ? " - " + number : ""));
-          setFlatListItems(updatedCallStates);
-          setCallStates(updatedCallStates);
-
-          // For iOS event will be either "Connected",
-          // "Disconnected","Dialing" and "Incoming"
-
-          // For Android event will be either "Offhook",
-          // "Disconnected", "Incoming" or "Missed"
-          // phoneNumber should store caller/called number
-
-          if (event === "Disconnected") {
-            // Do something call got disconnected
-          } else if (event === "Connected") {
-            // Do something call got connected
-            // This clause will only be executed for iOS
-          } else if (event === "Incoming") {
-            // Do something call got incoming
-
-            Alert.alert(
-              //title
-              'Hello',
-              //body
-              'I am two option alert. Do you want to cancel me ?',
-              [
-                {
-                  text: 'Yes',
-                  onPress: () => console.log('Yes Pressed')
-                },
-                {
-                  text: 'No',
-                  onPress: () => console.log('No Pressed'), style: 'cancel'
-                },
-              ],
-              {cancelable: false},
-              //clicking out side of alert will not cancel
-            );
-
-          } else if (event === "Dialing") {
-            // Do something call got dialing
-            // This clause will only be executed for iOS
-          } else if (event === "Offhook") {
-            //Device call state: Off-hook.
-            // At least one call exists that is dialing,
-            // active, or on hold,
-            // and no calls are ringing or waiting.
-            // This clause will only be executed for Android
-          } else if (event === "Missed") {
-            // Do something call got missed
-            // This clause will only be executed for Android
-          }
-        },
-        true, // To detect incoming calls [ANDROID]
-        () => {
-          // If your permission got denied [ANDROID]
-          // Only if you want to read incoming number
-          // Default: console.error
-          console.log("Permission Denied by User");
-        },
-        {
-          title: "Phone State Permission",
-          message:
-            "This app needs access to your phone state in order to react and/or to adapt to incoming calls."
-        }
-      );
-    }
-    setIsStart(!isStart);
-  };
-
-  const listSeparator = () => {
-    return (
-      <View
-        style={{
-          height: 0.5,
-          width: "100%",
-          backgroundColor: "#ebebeb"
-        }}
-      />
-    );
-  };
-
-  // return (
-  //   <SafeAreaView style={{ flex: 1 }}>
-  //     <View style={styles.container}>
-  //       <View style={styles.header}>
-  //         {/* <Text style={styles.headerText}>https://www.banlist.info</Text> */}
-  //         <Text style={styles.headerText}>{text===undefined ? "1" : text.homes.executionTime + " | " + text.homes.total }</Text>
-  //       </View>
-  //       <FlatList
-  //         style={{ flex: 1 }}
-  //         data={flatListItems}
-  //         ItemSeparatorComponent={listSeparator}
-  //         renderItem={({ item }) => (
-  //           <View style={{ flex: 1 }}>
-  //             <Text style={styles.callLogs}>{JSON.stringify(item)}</Text>
-  //           </View>
-  //         )}
-  //         keyExtractor={(item, index) => index.toString()}
-  //       />
-
-          
- 
-  //       <TouchableOpacity style={styles.button} onPress={startStopListener}>
-  //         <Text style={styles.buttonText}>
-  //           {isStart ? "Stop Listner" : "Start Listener"}
-  //         </Text>
-  //       </TouchableOpacity>
-  //       <TouchableOpacity
-  //         activeOpacity={0.7}
-  //         // onPress={callFriendTapped}
-  //         onPress={(e)=>{
-  //           console.log("onPress")
-  //         }}
-  //         style={styles.fabStyle}
-  //       >
-  //         <Image
-  //           source={{
-  //             uri:
-  //               "https://raw.githubusercontent.com/AboutReact/sampleresource/master/input_phone.png"
-  //           }}
-  //           style={styles.fabImageStyle}
-  //         />
-  //       </TouchableOpacity>
-  //     </View>
-  //   </SafeAreaView>
-  // );
-
-  // return <AppContainer />;
-
   
   return (
-
     <NavigationContainer> 
       <Tab.Navigator 
         initialRouteName="Home"
@@ -532,8 +419,10 @@ const App = () => {
               }
               return
             })(route),
+            tabBarIcon: ({ color, size }) => (
+              <Icon name="home" color={color} size={size} />
+            ),
           })}/>
-
         <Tab.Screen 
           name="Call Logs" 
           component={CallLogsStackScreen} 
@@ -547,9 +436,10 @@ const App = () => {
               }
               return
             })(route),
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="time" color={color} size={size} />
+            ),
           })}/>
-
-          {/* SMSStackScreen */}
         <Tab.Screen 
           name="SMS" 
           component={SMSStackScreen} 
@@ -563,8 +453,18 @@ const App = () => {
               }
               return
             })(route),
+            tabBarIcon: ({ color, size }) => (
+              <Icon name="sms" color={color} size={size} />
+            ),
           })}/>
-        <Tab.Screen name="Settings" component={SettingStackScreen} />
+        <Tab.Screen 
+          name="Settings" 
+          component={SettingStackScreen}
+          options={({ route }) => ({
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="settings" color={color} size={size} />
+            ),
+          }) }/>
       </Tab.Navigator>
     </NavigationContainer>
   );
