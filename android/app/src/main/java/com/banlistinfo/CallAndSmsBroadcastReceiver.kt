@@ -4,17 +4,22 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.provider.Telephony
 import android.telephony.TelephonyManager
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.lang.Math.abs
 import java.text.Format
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -25,6 +30,9 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
 //    private var preferenceFileName = "banlistinfo"
 //    private var preferenceKey = "phone-sms"
 
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context?, intent: Intent?) {
         println("$TAG onReceive: ${intent?.action}")
 
@@ -46,6 +54,7 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
                             Utils.local_noti(context)
                         }
 
+
                         if (context?.let { Utils.isAppIsInBackground(it) } == true) {
                             val window = Window(context)
                             window.open("SMS", smsMessage.originatingAddress + " : " + smsMessage.displayMessageBody)
@@ -64,6 +73,7 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
                                 }
 
                                 val receive = Receive()
+                                receive._id = Utils.unique()
                                 receive.type = MainApplication().sms
                                 receive.phoneNumber = smsMessage.originatingAddress
                                 receive.messages = smsMessage.displayMessageBody
@@ -81,6 +91,7 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
                         } else {
                             try {
                                 val map = Arguments.createMap()
+                                map.putString("_id", Utils.unique())
                                 map.putString("type", MainApplication().sms)
                                 map.putString("phoneNumber", smsMessage.originatingAddress)
                                 map.putString("messages", smsMessage.displayMessageBody)
@@ -150,6 +161,7 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
                                     }
 
                                     val receive = Receive()
+                                    receive._id = Utils.unique()
                                     receive.type = MainApplication().callLogs
                                     receive.phoneNumber = phoneNumber
                                     receive.messages = ""
@@ -165,6 +177,7 @@ class CallAndSmsBroadcastReceiver: BroadcastReceiver() {
                             } else {
                                 try {
                                     val map = Arguments.createMap()
+                                    map.putString("_id", Utils.unique())
                                     map.putString("type", MainApplication().callLogs)
                                     map.putString("phoneNumber", phoneNumber)
                                     map.putString("messages", "")

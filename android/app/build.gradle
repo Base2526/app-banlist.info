@@ -5,11 +5,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-//    id 'com.apollographql.apollo'
-
     id 'com.apollographql.apollo3' version '3.6.2'
-//    id 'com.android.application' version '7.3.0'
-
 }
 
 //apply plugin: 'kotlin-kapt'
@@ -326,6 +322,11 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
     implementation "androidx.preference:preference-ktx:1.2.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0' // <-- add this; newer versions should work too
+
+    implementation 'com.google.android.gms:play-services-auth:20.3.0'
+    implementation "androidx.browser:browser:1.2.0"
 }
 
 if (isNewArchitectureEnabled()) {

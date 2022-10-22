@@ -9,18 +9,29 @@ import {
   NativeModules,
   DeviceEventEmitter,
   Modal,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions,
+  ActivityIndicator,
+  Linking
 } from "react-native";
 import ImageViewer from 'react-native-image-zoom-viewer';
 import { gql, useQuery } from '@apollo/client'
 import _ from "lodash"
-
-
+import RBSheet from "react-native-raw-bottom-sheet";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
+import {
+  LoginButton,
+  AccessToken,
+  GraphRequest,
+  GraphRequestManager,
+} from 'react-native-fbsdk';
+
 import Toast, {DURATION} from './vendor/node_modules/react-native-easy-toast'
 import ActionButton from './vendor/node_modules/react-native-action-button/ActionButton';
+
+import LoginRBSheet from "./LoginRBSheet"
 
 
 const GET_HOMES = gql`
@@ -53,11 +64,14 @@ const images = [{
 
 const HomeTab = (props) => {
   const toastRef = useRef();
+  const refRBSheet = useRef();
 
   const banlistInfoModule = NativeModules.BanlistInfoNativeModule
 
   const [modalVisible, setModalVisible] = useState(false)
   const [datas, setDatas] = useState([]);
+
+  const { width, height } = Dimensions.get('window');
 
   // ค่อยรับค่าส่งมากจาก android & ios native
   // DeviceEventEmitter.addListener('rnApp', (data) => {
@@ -70,60 +84,14 @@ const HomeTab = (props) => {
     variables: { 
       "userId": "62a2f633cf7946010d3c74fc",
       "page": 0,
-      "perPage": 100,
+      "perPage": 4,
       "keywordSearch": "",
       "category": "" }
   });
 
-  if(!loading){
-    console.log("homes >> data.status :", data)
-    if(data.homes.status){
-      console.log("homes >> :", data.homes.status, data.homes.total, data.homes.executionTime)
-
-      // setDatas(data.homes.data)
-    }
-  }
-
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      // banlistInfoModule.getCallLogs((values)=>{
-      //   console.log("getCallLogs : ", values)
-
-      //   if(!_.isEmpty(values)){
-      //     setDatas(JSON.parse(values))
-      //   }
-      // })
-
-      // banlistInfoModule.getSMS((values)=>{
-      //   console.log("getSMS : ", values)
-
-      //   if(!_.isEmpty(values)){
-      //     // setDatas(JSON.parse(values))
-      //   }
-      // })
-
-      // requestMultiple([PERMISSIONS.ANDROID.CALL_PHONE, 
-      //                  PERMISSIONS.ANDROID.READ_PHONE_STATE,
-      //                  PERMISSIONS.ANDROID.READ_CALL_LOG,
-      //                  PERMISSIONS.ANDROID.RECEIVE_SMS,
-      //                 // PERMISSIONS.ANDROID.POST_NOTIFICATIONS
-      //               ]).then((statuses) => {
-      //   console.log('CALL_PHONE', statuses[PERMISSIONS.ANDROID.CALL_PHONE]);
-      //   console.log('READ_PHONE_STATE', statuses[PERMISSIONS.ANDROID.READ_PHONE_STATE]);
-      //   console.log('READ_CALL_LOG', statuses[PERMISSIONS.ANDROID.READ_CALL_LOG]);
-      //   console.log('RECEIVE_SMS', statuses[PERMISSIONS.ANDROID.RECEIVE_SMS]);
-      //   // console.log('POST_NOTIFICATIONS', statuses[PERMISSIONS.ANDROID.POST_NOTIFICATIONS]);
-      // });
-    }
-
-    // toastRef.current.show('Error Saving Image');
-
- 
+   
   }, []);
-
-  // useEffect(()=>{
-  //   console.log(">>> datas :", datas)
-  // }, [datas])
 
   imageViewerHeader = () =>{
     return (<View style={[
@@ -163,7 +131,12 @@ const HomeTab = (props) => {
     return  <ActionButton
               buttonColor="rgba(231,76,60,1)"
               onPress={() => { 
-                setModalVisible(true)
+                // setModalVisible(true)
+
+                refRBSheet.current.open()
+
+                // GoogleSingUp()
+
                 // console.log(this.props.user)
                 // if(isEmpty(this.props.user)){
                 //   this.setState({showModalLogin: true})
@@ -189,16 +162,39 @@ const HomeTab = (props) => {
   }
 
   viewFlatList = () =>{
-    return  <FlatList
-              data={ datas }
+
+    if(!loading && data.homes.status){
+      // console.log("homes >> :", data.homes.status, data.homes.total, data.homes.executionTime)
+  
+      // setDatas(data.homes.data)
+      return  <FlatList
+              data={ data.homes.data }
               renderItem={({item}) =>{
+                // console.log("item :", item)
                 return renderItem(item)
               }}
             />
+    }else{
+      return <ActivityIndicator color={"#fff"}  size={'large'}/>
+    }
   }
 
   renderItem = (item) =>{
-    return <Text style={styles.item} >{item.type} : {item.phoneNumber} :: {item.messages}</Text>
+    return  <View style={{borderColor:'red',borderBottomWidth:1,borderTopWidth:1, padding: 5, marginBottom:5}}>
+               <TouchableOpacity
+                  onPress={()=>{
+                    console.log("Home onPress")
+                    if (Platform.OS !== 'android') {
+                      Linking.openURL(`telprompt:0988264820`)
+                    }
+                    else  {
+                      Linking.openURL(`tel:0988264820`)
+                    }
+                    
+                  }}>
+                <Text style={styles.item}>{item.title} : {item.nameSubname}</Text>
+              </TouchableOpacity>
+            </View>
   }
   
   return (
@@ -207,6 +203,10 @@ const HomeTab = (props) => {
       {viewModal()}
       {viewToast()}
       {viewActionButton()}
+
+      
+      <LoginRBSheet 
+        refRBSheet={refRBSheet}/>
     </View>
   );
   

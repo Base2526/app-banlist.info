@@ -106,11 +106,6 @@ const auth = (state = initialState, action) => {
             return { ...state, messages:newMessages };
         }
 
-        /*
-        ADDED_BOOKMARKS, 
-        ADDED_BOOKMARK
-        */
-
         case ADDED_BOOKMARKS: {
 
             console.log("ADDED_BOOKMARKS : ", action.data)

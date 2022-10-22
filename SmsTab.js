@@ -7,7 +7,8 @@ import {
   FlatList,
   Platform,
   NativeModules,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  TouchableOpacity
 } from "react-native";
 
 import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
@@ -19,19 +20,39 @@ const SmsTab = (props) => {
 
     useEffect(() => {
         if (Platform.OS === 'android') {
-          banlistInfoModule.getSMS((values)=>{
-            console.log("CallLogsTab : getSMS : ", values)
+          // banlistInfoModule.getSMS((values)=>{
+          //   console.log("CallLogsTab : getSMS : ", values)
     
-            if(!_.isEmpty(values)){
-            //   setDatas(JSON.parse(values))
-            }
-          })
+          //   if(!_.isEmpty(values)){
+          //   //   setDatas(JSON.parse(values))
+          //   }
+          // })
         }
     })
 
+    viewFlatList = () =>{
+      return  <FlatList
+                data={ props.sms }
+                renderItem={({item}) =>{
+                  console.log("SMS > item :", item)
+                  // return renderItem(item)
+                  return <View style={{borderColor:'red',borderBottomWidth:1, borderTopWidth:1 , padding: 5, marginBottom:5}}>
+                            <TouchableOpacity
+                            onPress={()=>{
+                              console.log("SMS onPress")
+                            }}
+                            >
+                              <Text style={styles.item}>{item.phoneNumber} : {item.messages} : {item.createdAt}</Text>
+                            </TouchableOpacity> 
+                          </View>
+                }}
+              />
+    }
+
     return (
         <View>
-            <Text style={styles.item}>SmsTab</Text>
+            {/* <Text style={styles.item}>SmsTab</Text> */}
+          {viewFlatList()}
         </View>
     )
 }
@@ -50,8 +71,11 @@ const styles = StyleSheet.create({
 
 
 const mapStateToProps = (state, ownProps) => {
-    console.log("mapStateToProps  :", state)
+    console.log("mapStateToProps  :", state.sms)
+
+    let {sms} = state.sms
     return {
+      sms
     }
 };
   

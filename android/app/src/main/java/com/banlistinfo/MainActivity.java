@@ -4,10 +4,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Base64;
 import android.util.Log;
 
 import androidx.activity.result.ActivityResult;
@@ -23,9 +27,12 @@ import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 
+import org.devio.rn.splashscreen.SplashScreen;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -83,6 +90,7 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    SplashScreen.show(this);  // here
     super.onCreate(savedInstanceState);
 
     // https://stackoverflow.com/questions/10962344/how-to-save-data-in-an-android-app
@@ -198,6 +206,24 @@ public class MainActivity extends ReactActivity {
     ///////////////
 
 
+    PackageInfo info;
+    try {
+      info = getPackageManager().getPackageInfo("com.banlistinfo", PackageManager.GET_SIGNATURES);
+      for (Signature signature : info.signatures) {
+        MessageDigest md;
+        md = MessageDigest.getInstance("SHA");
+        md.update(signature.toByteArray());
+        String something = new String(Base64.encode(md.digest(), 0));
+        //String something = new String(Base64.encodeBytes(md.digest()));
+        Log.e("hash key", something);
+      }
+    } catch (PackageManager.NameNotFoundException e1) {
+      Log.e("name not found", e1.toString());
+    } catch (NoSuchAlgorithmException e) {
+      Log.e("no such an algorithm", e.toString());
+    } catch (Exception e) {
+      Log.e("exception", e.toString());
+    }
   }
 
   // You can do the assignment inside onAttach or onCreate, i.e, before the activity is displayed

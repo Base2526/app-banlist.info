@@ -13,6 +13,7 @@ import {
 import BackgroundTimer from 'react-native-background-timer';
 
 import { gql, useQuery } from '@apollo/client'
+import { connect } from "react-redux";
 
 //Import Call Detector
 import CallDetectorManager from "react-native-call-detection";
@@ -25,6 +26,10 @@ import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-naviga
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+
+import SplashScreen from 'react-native-splash-screen'
+import _ from "lodash";
 
 import HomeTab from './HomeTab'
 import CallLogsTab from './CallLogsTab'
@@ -34,7 +39,9 @@ import SearchScreen from './SearchScreen'
 import SettingScreen from "./SettingScreen"
 
 import {HOST_GRAPHAL} from "./constants"
-import _ from "lodash";
+
+import { add_call_log } from "./redux/actions/call_logs"
+import { add_sms } from "./redux/actions/sms"
 
 // const HomeScreen = ({ navigation }) => {
 //   return (
@@ -339,7 +346,7 @@ query Homes($userId: ID, $page: Long, $perPage: Long, $keywordSearch: String, $c
 
 const Tab = createBottomTabNavigator();
 
-const App = () => {
+const App = (props) => {
 
   const banlistInfoModule = NativeModules.BanlistInfoNativeModule
 
@@ -362,18 +369,34 @@ const App = () => {
   // console.log("data >> :", loading, error, data)
 
   
-
-  // 
-
-  
   // ค่อยรับค่าส่งมากจาก android & ios native
   DeviceEventEmitter.addListener('rnApp', (data) => {
-    console.log("DeviceEventEmitter > rnApp :", [...datas, data])
+    console.log("DeviceEventEmitter > rnApp :", data, props)
 
     // setDatas([...datas, data])
+
+    switch(data.type){
+      case "call-logs":{
+        props.add_call_log(data)
+        break;
+      }
+
+      case "sms":{
+        props.add_sms(data)
+        break;
+      }
+    }
   });
 
   useEffect(()=>{
+
+    SplashScreen.hide();
+
+    GoogleSignin.configure({
+      webClientId: "693724870615-m3htr43a3fsqn7trq3gm62fe9upokfj6.apps.googleusercontent.com", 
+      offlineAccess: true
+    });
+
     if (Platform.OS === 'android') {
 
       let configs = {"HOST_GRAPHAL": "http://"+ HOST_GRAPHAL +"/graphql"}
@@ -483,4 +506,19 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+// export default App;
+
+const mapStateToProps = (state, ownProps) => {
+  console.log("mapStateToProps  :", state)
+  return {
+    sms: state.sms,
+    call_logs: state.call_logs
+  }
+};
+
+const mapDispatchToProps = {
+  add_call_log,
+  add_sms
+}
+
+export default connect( mapStateToProps, mapDispatchToProps )(App);

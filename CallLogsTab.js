@@ -7,7 +7,9 @@ import {
   FlatList,
   Platform,
   NativeModules,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  ActivityIndicator,
+  TouchableOpacity
 } from "react-native";
 
 import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
@@ -18,19 +20,38 @@ const CallLogsTab = (props) => {
 
     useEffect(() => {
         if (Platform.OS === 'android') {
-          banlistInfoModule.getCallLogs((values)=>{
-            console.log("CallLogsTab : getCallLogs : ", values)
+          // banlistInfoModule.getCallLogs((values)=>{
+          //   console.log("CallLogsTab : getCallLogs : ", values)
     
-            if(!_.isEmpty(values)){
-            //   setDatas(JSON.parse(values))
-            }
-          })
+          //   if(!_.isEmpty(values)){
+          //   //   setDatas(JSON.parse(values))
+          //   }
+          // })
         }
     })
 
+    viewFlatList = () =>{
+      return  <FlatList
+                data={ props.call_logs }
+                renderItem={({item}) =>{
+                  console.log("CallLogsTab > item :", item)
+                  // return renderItem(item)
+                  return <View style={{borderColor:'red',borderBottomWidth:1,borderTopWidth:1 , padding: 5, marginBottom:5}}>
+                            <TouchableOpacity
+                            onPress={()=>{
+                              console.log("CallLogs onPress")
+                            }}
+                            >
+                              <Text style={styles.item}>{item.phoneNumber} : {item.createdAt} </Text>
+                           </TouchableOpacity>
+                          </View>
+                }}
+              />
+    }
+
     return (
         <View>
-            <Text style={styles.item}>CallLogsTab</Text>
+            {viewFlatList()}
         </View>
     )
 }
@@ -48,9 +69,10 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state, ownProps) => {
-    console.log("mapStateToProps  :", state)
-    return {
-    }
+  let {call_logs} = state.call_logs
+  return {
+    call_logs
+  }
 };
   
 export default connect( mapStateToProps, null )(CallLogsTab);

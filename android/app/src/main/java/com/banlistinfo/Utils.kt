@@ -7,10 +7,12 @@ import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.RemoteViews
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.example.SearchMutation
@@ -20,6 +22,10 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.internal.notify
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.lang.Math.abs
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.util.*
 
 
 object Utils {
@@ -199,7 +205,13 @@ object Utils {
 
         try {
 
-            val intent = Intent(context, afterNotification::class.java)
+//            val intent = Intent(context, afterNotification::class.java)
+            val intent = Intent(
+                Intent.ACTION_VIEW, Uri.parse("banlistapp://")
+            )
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//            context.startActivity(i)
+
             val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 notificationChannel = NotificationChannel(channelId, description, NotificationManager .IMPORTANCE_HIGH)
@@ -218,13 +230,15 @@ object Utils {
                     .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.ic_launcher_foreground))
                     .setContentIntent(pendingIntent)
             }
-
             notificationManager.notify((1000..10000).random(), builder.build())
         }catch (e : Exception){
             val stacktrace = StringWriter().also { e.printStackTrace(PrintWriter(it)) }.toString().trim()
             println("Exception caught: $stacktrace")
         }
+    }
 
-
+    open fun unique(length: Int = 20): String{
+        val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+        return (1..length).map { allowedChars.random() }.joinToString("")
     }
 }
