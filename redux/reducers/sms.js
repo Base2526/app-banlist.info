@@ -1,4 +1,4 @@
-import { ADD_SMS, EDIT_SMS, DELETE_SMS } from "../../constants"
+import { ADD_SMSS, ADD_SMS, EDIT_SMS, DELETE_SMS } from "../../constants"
 import _ from "lodash"
 
 const initialState = {
@@ -11,6 +11,10 @@ const sms = (state = initialState, action) => {
 
         case "initialState":{
             return initialState
+        }
+
+        case ADD_SMSS:{
+            return { ...state, sms:action.data}
         }
 
         case ADD_SMS:{

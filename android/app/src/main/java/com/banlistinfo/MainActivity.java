@@ -10,6 +10,7 @@ import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
@@ -224,6 +225,13 @@ public class MainActivity extends ReactActivity {
     } catch (Exception e) {
       Log.e("exception", e.toString());
     }
+
+
+    ///////////////////
+
+
+
+    ///////////////////
   }
 
   // You can do the assignment inside onAttach or onCreate, i.e, before the activity is displayed
@@ -253,5 +261,6 @@ public class MainActivity extends ReactActivity {
           // Apply the edits!
           editor.apply();
         }
-      });
+      }
+      );
 }

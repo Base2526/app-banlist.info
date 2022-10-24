@@ -20,13 +20,16 @@ import _ from "lodash"
 import RBSheet from "react-native-raw-bottom-sheet";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
-
+import FastImage from 'react-native-fast-image'
 import {
   LoginButton,
   AccessToken,
   GraphRequest,
   GraphRequestManager,
 } from 'react-native-fbsdk';
+import { useNavigation } from '@react-navigation/native'
+import Menu, {MenuItem, MenuDivider} from 'react-native-material-menu';
+import Entypo from 'react-native-vector-icons/Entypo'
 
 import Toast, {DURATION} from './vendor/node_modules/react-native-easy-toast'
 import ActionButton from './vendor/node_modules/react-native-action-button/ActionButton';
@@ -65,8 +68,11 @@ const images = [{
 const HomeTab = (props) => {
   const toastRef = useRef();
   const refRBSheet = useRef();
+  const menuRef = useRef();
 
   const banlistInfoModule = NativeModules.BanlistInfoNativeModule
+
+  const navigation = useNavigation();
 
   const [modalVisible, setModalVisible] = useState(false)
   const [datas, setDatas] = useState([]);
@@ -84,12 +90,61 @@ const HomeTab = (props) => {
     variables: { 
       "userId": "62a2f633cf7946010d3c74fc",
       "page": 0,
-      "perPage": 4,
+      "perPage": 50,
       "keywordSearch": "",
       "category": "" }
   });
 
   useEffect(() => {
+    
+
+    navigation.setOptions({
+      // headerTitle: 'Home', 
+      headerTitle: () =>  <View style={{alignItems:'center', flexDirection: "row"}}>
+                            <TouchableOpacity style={{paddingRight: 10}} onPress={()=>navigation.navigate('profile')}>
+                              <FastImage
+                                style={{ width: 40, height: 40, borderRadius: 20 }}
+                                source={{
+                                    uri: "content://com.android.contacts/contacts/179/photo",
+                                    headers: { Authorization: 'someAuthToken' },
+                                    priority: FastImage.priority.normal,
+                                }}
+                                resizeMode={FastImage.resizeMode.contain}
+                              />
+                            </TouchableOpacity>
+                            <Text style={{fontSize: 20, fontWeight: "200", color:"#000"}}>Home</Text>
+                          </View>,
+      headerRight: () => 
+      <View style={{justifyContent:'center', paddingRight:5, flexDirection: "row"}}>
+        <TouchableOpacity 
+                          style={{}}
+                          onPress={()=>{
+                            navigation.navigate('search')
+                          }}>
+                          <Ionicons name="search" size={28} color="#000" />
+        </TouchableOpacity>
+        <Menu
+          ref={menuRef} 
+          button={
+            <TouchableOpacity 
+              style={{ marginHorizontal: 10, paddingLeft:5 }}
+              onPress={()=>{ 
+                menuRef.current?.show()
+              }}>
+            <Entypo name="dots-three-vertical" size={28} color={'#000'}  />
+            </TouchableOpacity>
+          }>
+          <MenuItem onPress={() => {}} style={{alignItems:'center'}}>
+            <Text style={{flex:9,
+                          flexDirection:'row',
+                          // alignItems:'center',
+                          // justifyContent:'center',
+                          color: "#000"}}>text 1</Text>
+          </MenuItem>
+        </Menu>
+      </View>
+    });
+
    
   }, []);
 
@@ -173,6 +228,13 @@ const HomeTab = (props) => {
                 // console.log("item :", item)
                 return renderItem(item)
               }}
+
+              // Performance settings
+              removeClippedSubviews={true} // Unmount components when outside of window 
+              initialNumToRender={2} // Reduce initial render amount
+              maxToRenderPerBatch={1} // Reduce number in each render batch
+              updateCellsBatchingPeriod={100} // Increase time between renders
+              windowSize={7} // Reduce the window size
             />
     }else{
       return <ActivityIndicator color={"#fff"}  size={'large'}/>
@@ -180,6 +242,10 @@ const HomeTab = (props) => {
   }
 
   renderItem = (item) =>{
+
+    // _.find(item.p)
+
+    
     return  <View style={{borderColor:'red',borderBottomWidth:1,borderTopWidth:1, padding: 5, marginBottom:5}}>
                <TouchableOpacity
                   onPress={()=>{
@@ -229,6 +295,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state, ownProps) => {
   // console.log("mapStateToProps  :", state)
   return {
+
   }
 };
 

@@ -1,4 +1,4 @@
-import { ADD_CALL_LOG, EDIT_CALL_LOG, DELETE_CALL_LOG } from "../../constants"
+import { ADD_CALL_LOGS, ADD_CALL_LOG, EDIT_CALL_LOG, DELETE_CALL_LOG } from "../../constants"
 import _ from "lodash"
 
 const initialState = {
@@ -11,6 +11,10 @@ const call_logs = (state = initialState, action) => {
 
         case "initialState":{
             return initialState
+        }
+
+        case ADD_CALL_LOGS:{
+            return { ...state, call_logs:action.data}
         }
 
         case ADD_CALL_LOG:{

@@ -10,7 +10,7 @@ import {
   DeviceEventEmitter,
   TouchableOpacity
 } from "react-native";
-
+import moment from "moment";
 import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
 import _ from "lodash"
 
@@ -42,10 +42,17 @@ const SmsTab = (props) => {
                               console.log("SMS onPress")
                             }}
                             >
-                              <Text style={styles.item}>{item.phoneNumber} : {item.messages} : {item.createdAt}</Text>
+                              <Text style={styles.item}>address: {item.address}, body: {item.body}, date: {moment.unix(item.date/1000).format("DD/MM/YYYY HH:mm:ss")}</Text>
                             </TouchableOpacity> 
                           </View>
                 }}
+                
+                // Performance settings
+                removeClippedSubviews={true} // Unmount components when outside of window 
+                initialNumToRender={2} // Reduce initial render amount
+                maxToRenderPerBatch={1} // Reduce number in each render batch
+                updateCellsBatchingPeriod={100} // Increase time between renders
+                windowSize={7} // Reduce the window size
               />
     }
 
