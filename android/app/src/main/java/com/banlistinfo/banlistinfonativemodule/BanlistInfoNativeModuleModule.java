@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 
 import com.banlistinfo.MainApplication;
 import com.banlistinfo.Receive;
+
+import com.banlistinfo.Utils;
 import com.banlistinfo.Window;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -24,6 +26,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,31 +110,42 @@ public class BanlistInfoNativeModuleModule extends ReactContextBaseJavaModule {
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, eventData);
     }
 
+    // getContacts
+    @ReactMethod
+    public static void getContacts(Callback callBack){
+        callBack.invoke(new Gson().toJson(new Utils().getContacts(reactContext)));
+    }
+
     @ReactMethod
     public static void getCallLogs(Callback callBack){
-        SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences(reactContext);
-        SharedPreferences sharedPreferences =  reactContext.getSharedPreferences((new MainApplication()).preferenceFileName, 0);
+//        SharedPreferences prefs =
+//                PreferenceManager.getDefaultSharedPreferences(reactContext);
+//        SharedPreferences sharedPreferences =  reactContext.getSharedPreferences((new MainApplication()).preferenceFileName, 0);
+//
+//        String json = "";
+//        if (sharedPreferences.contains((new MainApplication()).callLogs)) {
+//            json = sharedPreferences.getString((new MainApplication()).callLogs, "");
+//        }
+//
+//        callBack.invoke(json);
 
-        String json = "";
-        if (sharedPreferences.contains((new MainApplication()).callLogs)) {
-            json = sharedPreferences.getString((new MainApplication()).callLogs, "");
-        }
+//        utils.getCallLogs(reactContext);
 
-        callBack.invoke(json);
+        callBack.invoke(new Gson().toJson(new Utils().getCallLogs(reactContext)));
     }
 
     @ReactMethod
     public static void getSMS(Callback callBack){
-        SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences(reactContext);
-        SharedPreferences sharedPreferences =  reactContext.getSharedPreferences((new MainApplication()).preferenceFileName, 0);
-
-        String json = "";
-        if (sharedPreferences.contains((new MainApplication()).sms)) {
-            json = sharedPreferences.getString((new MainApplication()).sms, "");
-        }
-
-        callBack.invoke(json);
+//        SharedPreferences prefs =
+//                PreferenceManager.getDefaultSharedPreferences(reactContext);
+//        SharedPreferences sharedPreferences =  reactContext.getSharedPreferences((new MainApplication()).preferenceFileName, 0);
+//
+//        String json = "";
+//        if (sharedPreferences.contains((new MainApplication()).sms)) {
+//            json = sharedPreferences.getString((new MainApplication()).sms, "");
+//        }
+//
+//        callBack.invoke(json);
+        callBack.invoke(new Gson().toJson(new Utils().getSMS(reactContext)));
     }
 }

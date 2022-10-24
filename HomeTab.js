@@ -9,18 +9,32 @@ import {
   NativeModules,
   DeviceEventEmitter,
   Modal,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions,
+  ActivityIndicator,
+  Linking
 } from "react-native";
 import ImageViewer from 'react-native-image-zoom-viewer';
 import { gql, useQuery } from '@apollo/client'
 import _ from "lodash"
-
-
+import RBSheet from "react-native-raw-bottom-sheet";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import FastImage from 'react-native-fast-image'
+import {
+  LoginButton,
+  AccessToken,
+  GraphRequest,
+  GraphRequestManager,
+} from 'react-native-fbsdk';
+import { useNavigation } from '@react-navigation/native'
+import Menu, {MenuItem, MenuDivider} from 'react-native-material-menu';
+import Entypo from 'react-native-vector-icons/Entypo'
 
 import Toast, {DURATION} from './vendor/node_modules/react-native-easy-toast'
 import ActionButton from './vendor/node_modules/react-native-action-button/ActionButton';
+
+import LoginRBSheet from "./LoginRBSheet"
 
 
 const GET_HOMES = gql`
@@ -53,11 +67,17 @@ const images = [{
 
 const HomeTab = (props) => {
   const toastRef = useRef();
+  const refRBSheet = useRef();
+  const menuRef = useRef();
 
   const banlistInfoModule = NativeModules.BanlistInfoNativeModule
 
+  const navigation = useNavigation();
+
   const [modalVisible, setModalVisible] = useState(false)
   const [datas, setDatas] = useState([]);
+
+  const { width, height } = Dimensions.get('window');
 
   // ค่อยรับค่าส่งมากจาก android & ios native
   // DeviceEventEmitter.addListener('rnApp', (data) => {
@@ -70,60 +90,63 @@ const HomeTab = (props) => {
     variables: { 
       "userId": "62a2f633cf7946010d3c74fc",
       "page": 0,
-      "perPage": 100,
+      "perPage": 50,
       "keywordSearch": "",
       "category": "" }
   });
 
-  if(!loading){
-    console.log("homes >> data.status :", data)
-    if(data.homes.status){
-      console.log("homes >> :", data.homes.status, data.homes.total, data.homes.executionTime)
-
-      // setDatas(data.homes.data)
-    }
-  }
-
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      // banlistInfoModule.getCallLogs((values)=>{
-      //   console.log("getCallLogs : ", values)
+    
 
-      //   if(!_.isEmpty(values)){
-      //     setDatas(JSON.parse(values))
-      //   }
-      // })
+    navigation.setOptions({
+      // headerTitle: 'Home', 
+      headerTitle: () =>  <View style={{alignItems:'center', flexDirection: "row"}}>
+                            <TouchableOpacity style={{paddingRight: 10}} onPress={()=>navigation.navigate('profile')}>
+                              <FastImage
+                                style={{ width: 40, height: 40, borderRadius: 20 }}
+                                source={{
+                                    uri: "content://com.android.contacts/contacts/179/photo",
+                                    headers: { Authorization: 'someAuthToken' },
+                                    priority: FastImage.priority.normal,
+                                }}
+                                resizeMode={FastImage.resizeMode.contain}
+                              />
+                            </TouchableOpacity>
+                            <Text style={{fontSize: 20, fontWeight: "200", color:"#000"}}>Home</Text>
+                          </View>,
+      headerRight: () => 
+      <View style={{justifyContent:'center', paddingRight:5, flexDirection: "row"}}>
+        <TouchableOpacity 
+                          style={{}}
+                          onPress={()=>{
+                            navigation.navigate('search')
+                          }}>
+                          <Ionicons name="search" size={28} color="#000" />
+        </TouchableOpacity>
+        <Menu
+          ref={menuRef} 
+          button={
+            <TouchableOpacity 
+              style={{ marginHorizontal: 10, paddingLeft:5 }}
+              onPress={()=>{ 
+                menuRef.current?.show()
+              }}>
+            <Entypo name="dots-three-vertical" size={28} color={'#000'}  />
+            </TouchableOpacity>
+          }>
+          <MenuItem onPress={() => {}} style={{alignItems:'center'}}>
+            <Text style={{flex:9,
+                          flexDirection:'row',
+                          // alignItems:'center',
+                          // justifyContent:'center',
+                          color: "#000"}}>text 1</Text>
+          </MenuItem>
+        </Menu>
+      </View>
+    });
 
-      // banlistInfoModule.getSMS((values)=>{
-      //   console.log("getSMS : ", values)
-
-      //   if(!_.isEmpty(values)){
-      //     // setDatas(JSON.parse(values))
-      //   }
-      // })
-
-      // requestMultiple([PERMISSIONS.ANDROID.CALL_PHONE, 
-      //                  PERMISSIONS.ANDROID.READ_PHONE_STATE,
-      //                  PERMISSIONS.ANDROID.READ_CALL_LOG,
-      //                  PERMISSIONS.ANDROID.RECEIVE_SMS,
-      //                 // PERMISSIONS.ANDROID.POST_NOTIFICATIONS
-      //               ]).then((statuses) => {
-      //   console.log('CALL_PHONE', statuses[PERMISSIONS.ANDROID.CALL_PHONE]);
-      //   console.log('READ_PHONE_STATE', statuses[PERMISSIONS.ANDROID.READ_PHONE_STATE]);
-      //   console.log('READ_CALL_LOG', statuses[PERMISSIONS.ANDROID.READ_CALL_LOG]);
-      //   console.log('RECEIVE_SMS', statuses[PERMISSIONS.ANDROID.RECEIVE_SMS]);
-      //   // console.log('POST_NOTIFICATIONS', statuses[PERMISSIONS.ANDROID.POST_NOTIFICATIONS]);
-      // });
-    }
-
-    // toastRef.current.show('Error Saving Image');
-
- 
+   
   }, []);
-
-  // useEffect(()=>{
-  //   console.log(">>> datas :", datas)
-  // }, [datas])
 
   imageViewerHeader = () =>{
     return (<View style={[
@@ -163,7 +186,12 @@ const HomeTab = (props) => {
     return  <ActionButton
               buttonColor="rgba(231,76,60,1)"
               onPress={() => { 
-                setModalVisible(true)
+                // setModalVisible(true)
+
+                refRBSheet.current.open()
+
+                // GoogleSingUp()
+
                 // console.log(this.props.user)
                 // if(isEmpty(this.props.user)){
                 //   this.setState({showModalLogin: true})
@@ -189,16 +217,50 @@ const HomeTab = (props) => {
   }
 
   viewFlatList = () =>{
-    return  <FlatList
-              data={ datas }
+
+    if(!loading && data.homes.status){
+      // console.log("homes >> :", data.homes.status, data.homes.total, data.homes.executionTime)
+  
+      // setDatas(data.homes.data)
+      return  <FlatList
+              data={ data.homes.data }
               renderItem={({item}) =>{
+                // console.log("item :", item)
                 return renderItem(item)
               }}
+
+              // Performance settings
+              removeClippedSubviews={true} // Unmount components when outside of window 
+              initialNumToRender={2} // Reduce initial render amount
+              maxToRenderPerBatch={1} // Reduce number in each render batch
+              updateCellsBatchingPeriod={100} // Increase time between renders
+              windowSize={7} // Reduce the window size
             />
+    }else{
+      return <ActivityIndicator color={"#fff"}  size={'large'}/>
+    }
   }
 
   renderItem = (item) =>{
-    return <Text style={styles.item} >{item.type} : {item.phoneNumber} :: {item.messages}</Text>
+
+    // _.find(item.p)
+
+    
+    return  <View style={{borderColor:'red',borderBottomWidth:1,borderTopWidth:1, padding: 5, marginBottom:5}}>
+               <TouchableOpacity
+                  onPress={()=>{
+                    console.log("Home onPress")
+                    if (Platform.OS !== 'android') {
+                      Linking.openURL(`telprompt:0988264820`)
+                    }
+                    else  {
+                      Linking.openURL(`tel:0988264820`)
+                    }
+                    
+                  }}>
+                <Text style={styles.item}>{item.title} : {item.nameSubname}</Text>
+              </TouchableOpacity>
+            </View>
   }
   
   return (
@@ -207,6 +269,10 @@ const HomeTab = (props) => {
       {viewModal()}
       {viewToast()}
       {viewActionButton()}
+
+      
+      <LoginRBSheet 
+        refRBSheet={refRBSheet}/>
     </View>
   );
   
@@ -229,6 +295,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state, ownProps) => {
   // console.log("mapStateToProps  :", state)
   return {
+
   }
 };
 

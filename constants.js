@@ -25,3 +25,16 @@ export const FOLLOWER_POST  = 'FOLLOWER_POST';       // case add each item
 
 export const NET_INFO   = 'NET_INFO'
 export const NOTIFICATIONS   = 'NOTIFICATIONS'
+
+
+export const ADD_CALL_LOGS     = 'ADD_CALL_LOGS';
+export const ADD_CALL_LOG      = 'ADD_CALL_LOG';
+export const EDIT_CALL_LOG     = 'EDIT_CALL_LOG';
+export const DELETE_CALL_LOG   = 'DELETE_CALL_LOG';
+
+export const ADD_SMSS      = 'ADD_SMSS';
+export const ADD_SMS      = 'ADD_SMS';
+export const EDIT_SMS     = 'EDIT_SMS';
+export const DELETE_SMS   = 'DELETE_SMS';
+
+export const ADD_CONTACTS = "ADD_CONTACTS"
