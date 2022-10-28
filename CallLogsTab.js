@@ -78,7 +78,7 @@ const CallLogsTab = (props) => {
 
                   let contact = _.find(props.contacts, (c)=>c.phone == item.number)
 
-                  console.log("CallLogsTab > contact :", contact)
+                  // console.log("CallLogsTab > contact :", contact)
                   return <View style={{borderColor:'red',borderBottomWidth:1,borderTopWidth:1 , padding: 5, marginBottom:5}}>
                             <TouchableOpacity
                             onPress={()=>{

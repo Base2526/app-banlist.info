@@ -34,7 +34,7 @@ const SmsTab = (props) => {
       return  <FlatList
                 data={ props.sms }
                 renderItem={({item}) =>{
-                  console.log("SMS > item :", item)
+                  // console.log("SMS > item :", item)
                   // return renderItem(item)
                   return <View style={{borderColor:'red',borderBottomWidth:1, borderTopWidth:1 , padding: 5, marginBottom:5}}>
                             <TouchableOpacity

@@ -162,6 +162,10 @@ android get Contact
 https://gist.github.com/srayhunter/47ab2816b01f0b00b79150150feb2eb2
 
 
+react native  : EXPANDING AND COLLAPSING ELEMENTS IN REACT NATIVE
+https://moduscreate.com/blog/expanding-and-collapsing-elements-using-animations-in-react-native/
+
+
 // phone status
 - Outgoing call
 - Not answered

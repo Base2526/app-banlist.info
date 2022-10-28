@@ -394,18 +394,8 @@ const App = (props) => {
     }
 
     banlistInfoModule.getContacts((values)=>{
-      console.log("getContacts : ", values, JSON.parse(values))
-
       if(!_.isEmpty(values)){
-
         props.add_contacts( _.map(JSON.parse(values), v=>v ))
-      // add_contacts
-        // props.add_contacts( _.map(JSON.parse(values), v=>{ return {"_id":v[0], 
-        // "number":v[1],
-        // "name":v[2], 
-        // "type":v[3], 
-        // "duration":v[4], 
-        // "date":v[5]} }) )
       }
     })
   }
@@ -416,26 +406,8 @@ const App = (props) => {
     }
 
     banlistInfoModule.getCallLogs((values)=>{
-      console.log("getCallLogs : ", values, JSON.parse(values), props)
-
       if(!_.isEmpty(values)){
-
         props.add_call_logs( _.map(JSON.parse(values), v=>v ) )
-        // props.add_call_logs( _.map(JSON.parse(values), v=>{ return {"_id":v[0], 
-        //                                                             "number":v[1],
-        //                                                             "name":v[2], 
-        //                                                             "type":v[3], 
-        //                                                             "duration":v[4], 
-        //                                                             "date":v[5]} }) )
-
-        /*
-        CallLog.Calls._ID,
-        CallLog.Calls.NUMBER,
-        CallLog.Calls.CACHED_NAME,
-        CallLog.Calls.TYPE,
-        CallLog.Calls.DURATION,
-        CallLog.Calls.DATE
-        */
       }
     })
   }
@@ -447,30 +419,15 @@ const App = (props) => {
     }
 
     banlistInfoModule.getSMS((values)=>{
-      console.log("getSMS : ", values, JSON.parse(values))
-
       if(!_.isEmpty(values)){
         props.add_smss( _.map(JSON.parse(values), v=>v ) )
-
-        /*
-        Telephony.Sms.Inbox._ID,
-        Telephony.Sms.Inbox.ADDRESS,
-        Telephony.Sms.Inbox.TYPE,
-        Telephony.Sms.Inbox.SUBJECT,
-        Telephony.Sms.Inbox.BODY,
-        Telephony.Sms.Inbox.DATE,
-        Telephony.Sms.Inbox.DATE_SENT,
-        Telephony.Sms.Inbox.READ,
-        Telephony.Sms.Inbox.SEEN,
-        Telephony.Sms.Inbox.STATUS
-        */
       }
     })
   }
 
   useEffect(async()=>{
 
-    await FastImage.preload([{ uri: 'https://app.box.com/shared/static/dz6tvgka56ub8xfii6v4516zco0bmvwq.jpg' }])
+    // await FastImage.preload([{ uri: 'https://app.box.com/shared/static/dz6tvgka56ub8xfii6v4516zco0bmvwq.jpg' }])
 
     SplashScreen.hide();
 
@@ -594,7 +551,7 @@ const styles = StyleSheet.create({
 // export default App;
 
 const mapStateToProps = (state, ownProps) => {
-  console.log("mapStateToProps  :", state)
+  // console.log("mapStateToProps  :", state)
   return {
     sms: state.sms,
     call_logs: state.call_logs
