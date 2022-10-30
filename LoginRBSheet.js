@@ -125,9 +125,10 @@ const LoginRBSheet = (props) => {
     };
     
 
-    viewRBSheet = () =>{
+    // viewRBSheet = () =>{
         return <RBSheet
-                  height={height-height/3}
+                  // height={height-height/3}
+                  height={height}
                   ref={refRBSheet}
                   closeOnDragDown={true}
                   closeOnPressMask={true}
@@ -150,13 +151,13 @@ const LoginRBSheet = (props) => {
                         />
                   </View>
                 </RBSheet>
-    }
+    // }
 
-    return (
-        <View style={styles.mainScreen}>
-            {viewRBSheet()}    
-        </View>
-    )
+    // return (
+    //     <View style={styles.mainScreen}>
+    //         {viewRBSheet()}    
+    //     </View>
+    // )
 }
 
 // Just some styles

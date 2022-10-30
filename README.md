@@ -162,8 +162,23 @@ android get Contact
 https://gist.github.com/srayhunter/47ab2816b01f0b00b79150150feb2eb2
 
 
+react native  : EXPANDING AND COLLAPSING ELEMENTS IN REACT NATIVE
+https://moduscreate.com/blog/expanding-and-collapsing-elements-using-animations-in-react-native/
+
+
 // phone status
 - Outgoing call
 - Not answered
 - Incoming call
 - Missed call
+
+Android native  Full Screen Bottom Sheet
+https://proandroiddev.com/how-to-animate-bottomsheet-content-using-jetpack-compose-3eab972b3bdc#77ea-ef11dee8175f
+
+https://betterprogramming.pub/bottom-sheet-android-340703e114d2
+https://habr.com/ru/company/dododev/blog/510066/
+
+
+Deep linking
+test : npx uri-scheme open banlistapp://tab_home/profile/1234 --android
+

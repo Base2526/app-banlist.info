@@ -10,9 +10,11 @@ import {
   DeviceEventEmitter,
   ActivityIndicator,
   TouchableOpacity,
-  Image
+  Image,
+  SafeAreaView,
+  ScrollView 
 } from "react-native";
-
+import { gql, useQuery } from '@apollo/client'
 import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
 import _ from "lodash"
 import { useNavigation } from '@react-navigation/native'
@@ -20,11 +22,32 @@ import Entypo from 'react-native-vector-icons/Entypo'
 import Menu, {MenuItem, MenuDivider} from 'react-native-material-menu';
 import moment from "moment";
 
-const ProfileScreen = (props) => {
+
+const GET_POST = gql`query Post($id: ID!) { post(_id: $id) }`;
+
+const DetailScreen = (props) => {
     const banlistInfoModule = NativeModules.BanlistInfoNativeModule
     const navigation = useNavigation();
 
+
+    console.log("DetailScreen :", props)
+
+    if(_.isEmpty(props.route.params)){
+      return <ActivityIndicator color={"#fff"}  size={'large'}/>
+    }
+    let {screen} = props.route.params
+
+    let _id  =  !_.isEmpty(screen) ? props.route.params.params._id : props.route.params._id
+
+    console.log("")
+
     useEffect(() => {
+
+      console.log("useEffect")
+
+      post && post.refetch({ id: _id })
+
+      // console.log("DetailScreen :", _id )
 
       // navigation.setOptions({
       //   headerRight: () => 
@@ -51,12 +74,28 @@ const ProfileScreen = (props) => {
       //     </Menu>
       //   </View>
       // });
-    }, [])
+    }, [_id])
+
+    // { loading, error, data }
+    const post  = useQuery(GET_POST , {
+      variables: {id: ""},
+      notifyOnNetworkStatusChange: true,
+    });
+
+    // if(!loading && data.homes.status){
+    if(!post.loading && post.data.post){
+      let { data, executionTime, status } = post.data.post
+      console.log("DetailScreen :", data, executionTime, status)
+    }else{
+      return <ActivityIndicator color={"#fff"}  size={'large'}/>
+    }
 
     return (
-        <View>
-          <Text style={{color:"#000"}}>ProfileScreen</Text>
-        </View>
+      <SafeAreaView>
+        <ScrollView>
+          <Text style={{color:"#000"}}>DetailScreen : {JSON.stringify(post.data.post)}</Text>
+        </ScrollView>
+      </SafeAreaView>
     )
 }
 
@@ -76,4 +115,4 @@ const mapStateToProps = (state, ownProps) => {
   return {}
 };
   
-export default connect( mapStateToProps, null )(ProfileScreen);
+export default connect( mapStateToProps, null )(DetailScreen);

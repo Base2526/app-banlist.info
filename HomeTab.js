@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { connect } from "react-redux";
 import {
   StyleSheet,
@@ -12,12 +12,12 @@ import {
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
-  Linking
+  Linking,
+  Image,
 } from "react-native";
 import ImageViewer from 'react-native-image-zoom-viewer';
 import { gql, useQuery } from '@apollo/client'
 import _ from "lodash"
-import RBSheet from "react-native-raw-bottom-sheet";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import FastImage from 'react-native-fast-image'
@@ -31,10 +31,17 @@ import { useNavigation } from '@react-navigation/native'
 import Menu, {MenuItem, MenuDivider} from 'react-native-material-menu';
 import Entypo from 'react-native-vector-icons/Entypo'
 
+import MasonryList from '@react-native-seoul/masonry-list';
+
+import * as Animatable from 'react-native-animatable';
+import Collapsible from 'react-native-collapsible';
+
 import Toast, {DURATION} from './vendor/node_modules/react-native-easy-toast'
 import ActionButton from './vendor/node_modules/react-native-action-button/ActionButton';
 
 import LoginRBSheet from "./LoginRBSheet"
+
+import HomeItem from "./HomeItem"
 
 
 const GET_HOMES = gql`
@@ -43,29 +50,174 @@ query Homes($userId: ID, $page: Long, $perPage: Long, $keywordSearch: String, $c
 }
 `;
 
-const images = [{
-  // Simplest usage.
-  url: 'https://avatars2.githubusercontent.com/u/7970947?v=3&s=460',
-
-  // width: number
-  // height: number
-  // Optional, if you know the image size, you can set the optimization performance
-
-  // You can pass props to <Image />.
-  props: {
-      // headers: ...
-  }
-}, 
-// {
-//   url: '',
+// const images = [{
+//   // Simplest usage.
+//   url: 'https://avatars2.githubusercontent.com/u/7970947?v=3&s=460',
+//   // width: number
+//   // height: number
+//   // Optional, if you know the image size, you can set the optimization performance
+//   // You can pass props to <Image />.
 //   props: {
-//       // Or you can set source directory.
-//       source: require('../background.png')
+//       // headers: ...
 //   }
-// }
-]
+// }, 
+// // {
+// //   url: '',
+// //   props: {
+// //       // Or you can set source directory.
+// //       source: require('../background.png')
+// //   }
+// // }
+// ]
+// const datax = [
+//   {
+//     id: 'id123',
+//     imgURL:
+//       'https://ii1.pepperfry.com/media/catalog/product/m/o/568x625/modern-chaise-lounger-in-grey-colour-by-dreamzz-furniture-modern-chaise-lounger-in-grey-colour-by-dr-tmnirx.jpg',
+//     text: 'Pioneer LHS Chaise Lounger in Grey Colour',
+//   },
+//   {
+//     id: 'id124',
+//     imgURL:
+//       'https://www.precedent-furniture.com/sites/precedent-furniture.com/files/styles/header_slideshow/public/3360_SL%20CR.jpg?itok=3Ltk6red',
+//     text: 'Precedant Furniture',
+//   },
+//   {
+//     id: 'id125',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/leverette-fabric-queen-upholstered-platform-bed-1594829293.jpg',
+//     text: 'Leverette Upholstered Platform Bed',
+//   },
+//   {
+//     id: 'id126',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/briget-side-table-1582143245.jpg?crop=1.00xw:0.770xh;0,0.129xh&resize=768:*',
+//     text: 'Briget Accent Table',
+//   },
+//   {
+//     id: 'id127',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/rivet-emerly-media-console-1610578756.jpg?crop=1xw:1xh;center,top&resize=768:*',
+//     text: 'Rivet Emerly Media Console',
+//   },
+//   {
+//     id: 'id128',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/drew-barrymore-flower-home-petal-chair-1594829759.jpeg?crop=1xw:1xh;center,top&resize=768:*',
+//     text: 'Drew Barrymore Flower Home Accent Chair',
+//   },
+//   {
+//     id: 'id129',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/goodee-ecobirdy-charlie-chairs-1594834221.jpg?crop=1xw:1xh;center,top&resize=768:*',
+//     text: 'Ecobirdy Charlie Chair',
+//   },
+//   {
+//     id: 'id130',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/hailey-sofa-1571430947.jpg?crop=0.481xw:0.722xh;0.252xw,0.173xh&resize=768:*',
+//     text: 'Hailey Sofa',
+//   },
+//   {
+//     id: 'id131',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/archer-home-designs-dining-table-1594830125.jpg?crop=0.657xw:1.00xh;0.0986xw,0&resize=768:*',
+//     text: 'Farmhouse Dining Table',
+//   },
+//   {
+//     id: 'id132',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/evelyn-coffee-table-1610578857.jpeg?crop=1xw:1xh;center,top&resize=768:*',
+//     text: 'Evelyn Coffee Table',
+//   },
+//   {
+//     id: 'id133',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/burrow-nomad-sofa-1594837995.jpg?crop=1xw:1xh;center,top&resize=768:*',
+//     text: 'Slope Nomad Leather Sofa',
+//   },
+//   {
+//     id: 'id134',
+//     imgURL:
+//       'https://apicms.thestar.com.my/uploads/images/2020/02/21/570850.jpg',
+//     text: 'Chair and Table',
+//   },
+//   {
+//     id: 'id223',
+//     imgURL:
+//       'https://ii1.pepperfry.com/media/catalog/product/m/o/568x625/modern-chaise-lounger-in-grey-colour-by-dreamzz-furniture-modern-chaise-lounger-in-grey-colour-by-dr-tmnirx.jpg',
+//     text: 'Pioneer LHS Chaise Lounger in Grey Colour',
+//   },
+//   {
+//     id: 'id224',
+//     imgURL:
+//       'https://www.precedent-furniture.com/sites/precedent-furniture.com/files/styles/header_slideshow/public/3360_SL%20CR.jpg?itok=3Ltk6red',
+//     text: 'Precedant Furniture',
+//   },
+//   {
+//     id: 'id225',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/leverette-fabric-queen-upholstered-platform-bed-1594829293.jpg',
+//     text: 'Leverette Upholstered Platform Bed',
+//   },
+//   {
+//     id: 'id226',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/briget-side-table-1582143245.jpg?crop=1.00xw:0.770xh;0,0.129xh&resize=768:*',
+//     text: 'Briget Accent Table',
+//   },
+//   {
+//     id: 'id227',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/rivet-emerly-media-console-1610578756.jpg?crop=1xw:1xh;center,top&resize=768:*',
+//     text: 'Rivet Emerly Media Console',
+//   },
+//   {
+//     id: 'id228',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/drew-barrymore-flower-home-petal-chair-1594829759.jpeg?crop=1xw:1xh;center,top&resize=768:*',
+//     text: 'Drew Barrymore Flower Home Accent Chair',
+//   },
+//   {
+//     id: 'id229',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/goodee-ecobirdy-charlie-chairs-1594834221.jpg?crop=1xw:1xh;center,top&resize=768:*',
+//     text: 'Ecobirdy Charlie Chair',
+//   },
+//   {
+//     id: 'id230',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/hailey-sofa-1571430947.jpg?crop=0.481xw:0.722xh;0.252xw,0.173xh&resize=768:*',
+//     text: 'Hailey Sofa',
+//   },
+//   {
+//     id: 'id231',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/archer-home-designs-dining-table-1594830125.jpg?crop=0.657xw:1.00xh;0.0986xw,0&resize=768:*',
+//     text: 'Farmhouse Dining Table',
+//   },
+//   {
+//     id: 'id232',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/evelyn-coffee-table-1610578857.jpeg?crop=1xw:1xh;center,top&resize=768:*',
+//     text: 'Evelyn Coffee Table',
+//   },
+//   {
+//     id: 'id233',
+//     imgURL:
+//       'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/burrow-nomad-sofa-1594837995.jpg?crop=1xw:1xh;center,top&resize=768:*',
+//     text: 'Slope Nomad Leather Sofa',
+//   },
+//   {
+//     id: 'id234',
+//     imgURL:
+//       'https://apicms.thestar.com.my/uploads/images/2020/02/21/570850.jpg',
+//     text: 'Chair and Table',
+//   },
+// ];
 
 const HomeTab = (props) => {
+  const masonryListRef = useRef();
   const toastRef = useRef();
   const refRBSheet = useRef();
   const menuRef = useRef();
@@ -76,6 +228,10 @@ const HomeTab = (props) => {
 
   const [modalVisible, setModalVisible] = useState(false)
   const [datas, setDatas] = useState([]);
+
+  const [imageUrls, setImageUrls] = useState([]);
+
+  const [collapsed, setCollapsed] = useState(false);
 
   const { width, height } = Dimensions.get('window');
 
@@ -90,7 +246,7 @@ const HomeTab = (props) => {
     variables: { 
       "userId": "62a2f633cf7946010d3c74fc",
       "page": 0,
-      "perPage": 50,
+      "perPage": 100,
       "keywordSearch": "",
       "category": "" }
   });
@@ -101,27 +257,33 @@ const HomeTab = (props) => {
     navigation.setOptions({
       // headerTitle: 'Home', 
       headerTitle: () =>  <View style={{alignItems:'center', flexDirection: "row"}}>
-                            <TouchableOpacity style={{paddingRight: 10}} onPress={()=>navigation.navigate('profile')}>
+                            <TouchableOpacity 
+                              style={{paddingRight: 10}} 
+                              onPress={()=>{
+                                // navigation.navigate('profile')
+
+                                refRBSheet.current.open()
+                              }}>
                               <FastImage
-                                style={{ width: 40, height: 40, borderRadius: 20 }}
+                                style={{ width: 40, height: 40, borderRadius: 20, borderWidth: 1, borderColor: "thistle",}}
                                 source={{
-                                    uri: "content://com.android.contacts/contacts/179/photo",
+                                    uri: "https://ii1.pepperfry.com/media/catalog/product/m/o/568x625/modern-chaise-lounger-in-grey-colour-by-dreamzz-furniture-modern-chaise-lounger-in-grey-colour-by-dr-tmnirx.jpg",
                                     headers: { Authorization: 'someAuthToken' },
                                     priority: FastImage.priority.normal,
                                 }}
                                 resizeMode={FastImage.resizeMode.contain}
                               />
                             </TouchableOpacity>
-                            <Text style={{fontSize: 20, fontWeight: "200", color:"#000"}}>Home</Text>
+                            <Text style={{fontSize: 22, fontWeight: "400", color:"#000"}}>Home</Text>
                           </View>,
       headerRight: () => 
       <View style={{justifyContent:'center', paddingRight:5, flexDirection: "row"}}>
         <TouchableOpacity 
-                          style={{}}
-                          onPress={()=>{
-                            navigation.navigate('search')
-                          }}>
-                          <Ionicons name="search" size={28} color="#000" />
+          style={{}}
+          onPress={()=>{
+            navigation.navigate('search')
+          }}>
+          <Ionicons name="search" size={28} color="#000" />
         </TouchableOpacity>
         <Menu
           ref={menuRef} 
@@ -144,8 +306,6 @@ const HomeTab = (props) => {
         </Menu>
       </View>
     });
-
-   
   }, []);
 
   imageViewerHeader = () =>{
@@ -188,7 +348,7 @@ const HomeTab = (props) => {
               onPress={() => { 
                 // setModalVisible(true)
 
-                refRBSheet.current.open()
+                
 
                 // GoogleSingUp()
 
@@ -201,7 +361,7 @@ const HomeTab = (props) => {
               }}/>
   }
 
-  viewModal = () =>{
+  viewImageViewerModal = () =>{
     return <Modal 
             visible={modalVisible} 
             transparent={true}
@@ -212,7 +372,7 @@ const HomeTab = (props) => {
               onSwipeDown={() => {
                 setModalVisible(false)
               }}
-              imageUrls={images}/>
+              imageUrls={imageUrls}/>
           </Modal>
   }
 
@@ -226,7 +386,7 @@ const HomeTab = (props) => {
               data={ data.homes.data }
               renderItem={({item}) =>{
                 // console.log("item :", item)
-                return renderItem(item)
+                // return renderItem(item)
               }}
 
               // Performance settings
@@ -241,36 +401,145 @@ const HomeTab = (props) => {
     }
   }
 
-  renderItem = (item) =>{
+  // renderItem = (item) =>{
 
-    // _.find(item.p)
+  //   // _.find(item.p)
 
     
-    return  <View style={{borderColor:'red',borderBottomWidth:1,borderTopWidth:1, padding: 5, marginBottom:5}}>
-               <TouchableOpacity
-                  onPress={()=>{
-                    console.log("Home onPress")
-                    if (Platform.OS !== 'android') {
-                      Linking.openURL(`telprompt:0988264820`)
-                    }
-                    else  {
-                      Linking.openURL(`tel:0988264820`)
-                    }
+  //   return  <View style={{borderColor:'red',borderBottomWidth:1,borderTopWidth:1, padding: 5, marginBottom:5}}>
+  //              <TouchableOpacity
+  //                 onPress={()=>{
+  //                   console.log("Home onPress")
+  //                   if (Platform.OS !== 'android') {
+  //                     Linking.openURL(`telprompt:0988264820`)
+  //                   }
+  //                   else  {
+  //                     Linking.openURL(`tel:0988264820`)
+  //                   }
                     
-                  }}>
-                <Text style={styles.item}>{item.title} : {item.nameSubname}</Text>
-              </TouchableOpacity>
-            </View>
-  }
+  //                 }}>
+  //               <Text style={styles.item}>{item.title} : {item.nameSubname}</Text>
+  //             </TouchableOpacity>
+  //           </View>
+  // }
   
+  const renderMasonryListItem = ({item, i}) => {
+    return (
+      // <FurnitureCard item={item}  style={{ /*arginLeft: i % 2 === 0 ? 0 : 12*/ }} />
+
+      <HomeItem 
+        {...props} 
+        toastRef={toastRef} 
+        item={item}  
+        style={{ /*arginLeft: i % 2 === 0 ? 0 : 12*/ }}
+        onShowImageViewer={(events)=>{
+          let urls = _.map(events, (ev)=>{
+            return {url: ev.url, width: 0, height: 0}
+          }) 
+
+          if(_.isEmpty(urls)){
+            toastRef.current.show("Empty image.")
+          }else{
+            setImageUrls(urls)
+            setModalVisible(true)
+          }
+        }}/>
+    );
+  };
+
+  const FurnitureCard = ({item, style}) => {
+    const randomBool = useMemo(() => Math.random() < 0.5, []);
+    // const {theme} = useTheme();
+
+    console.log("furniturecard : ", item)
+    return (
+      <View key={item.id} style={[{marginTop: 5, flex: 1 }, style]}>
+        <Image
+          source={{uri: !_.isEmpty(item.files) ? item.files[0].url : ""}}
+          style={{
+            // height: randomBool ? 150 : 280,
+            height: 280,
+            alignSelf: 'stretch',
+            borderWidth: 1,
+            borderColor: "thistle",
+          }}
+          resizeMode="cover"
+        />
+        <Text
+          style={{
+            marginTop: 8,
+            // color: theme.text,
+            borderWidth: 1,
+            borderColor: "thistle",
+            color: "black"
+          }}
+          onPress={()=>setCollapsed(!collapsed)}
+        >
+          {item.title}
+        </Text>
+
+        <Collapsible collapsed={collapsed}>
+            <View  /*style={styles.content}*/>
+              <Animatable.Text
+                animation={collapsed ? undefined : 'zoomIn'}
+                duration={300}
+                useNativeDriver
+              >
+                Bacon ipsum dolor amet chuck turducken landjaeger tongue spare
+                ribs
+              </Animatable.Text>
+            </View>
+          </Collapsible>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.mainScreen}>
+      {
+      loading
+      ? <ActivityIndicator color={"#fff"}  size={'large'}/>
+      : <MasonryList
+          innerRef={masonryListRef}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={<View />}
+          contentContainerStyle={{
+            paddingHorizontal: 5,
+            alignSelf: 'stretch',
+          }}
+          numColumns={1}
+          data={data.homes.data}
+          renderItem={renderMasonryListItem}
+          showsVerticalScrollIndicator={true}
+          onEndReached={() => console.log("onEndReached :")}
+          onEndReachedThreshold={0.1}
+          onRefresh={()=>{
+            console.log("onRefresh...")
+          }}
+          // LoadingView={ ()=>{
+          //   console.log("LoadingView")
+          //   return  <View style={{height: 40, width: '100%', backgroundColor: "red" }}>
+          //             <ActivityIndicator color={"#fff"}  size={'large'}/>
+          //           </View>
+          // }}
+          ListFooterComponent ={
+            <View style={{ height: 40, width: '100%', backgroundColor: "green" }}><Text>Footer</Text></View>
+          }/>
+      }
+
+      {viewImageViewerModal()}
+      {viewToast()}
+       
+      <LoginRBSheet refRBSheet={refRBSheet}/>
+    </View>
+  )
+
+  return2 (
+    <View style={styles.mainScreen}>
       {viewFlatList()}
-      {viewModal()}
+      {viewImageViewerModal()}
       {viewToast()}
       {viewActionButton()}
-
-      
       <LoginRBSheet 
         refRBSheet={refRBSheet}/>
     </View>

@@ -210,7 +210,7 @@ const store = createStore(reducer, compose(applyMiddleware(...middleware)) /*app
 const persistor = persistStore(store);
 //////////////// redux /////////////////
 
-const AppX = () => (
+const index = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       {/* <NavigationContainer> */}
@@ -222,4 +222,4 @@ const AppX = () => (
   </Provider>
 );
 
-AppRegistry.registerComponent("banlistinfo", () => AppX);
+AppRegistry.registerComponent("banlistinfo", () => index);
