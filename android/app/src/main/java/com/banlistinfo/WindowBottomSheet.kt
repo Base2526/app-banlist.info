@@ -11,12 +11,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.SearchMutation
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.runBlocking
 import java.io.PrintWriter
 import java.io.StringWriter
 
-open class Window(context: Context) {
+open class WindowBottomSheet(context: Context) {
 
     // declaring required variables
     private var context: Context? = null
@@ -27,7 +29,7 @@ open class Window(context: Context) {
 
     var ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5469
 
-    private val TAG = Window::class.java.name
+    private val TAG = WindowBottomSheet::class.java.name
 
     init {
         this.context = context
@@ -39,6 +41,7 @@ open class Window(context: Context) {
                 WindowManager.LayoutParams.WRAP_CONTENT,  // Display it on top of other application windows
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,  // Don't let it grab the input focus
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,  // Make the underlying application window visible
+
                 // through any transparent parts
                 PixelFormat.TRANSLUCENT
             )
@@ -46,9 +49,13 @@ open class Window(context: Context) {
         // getting a LayoutInflater
         layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         // inflating the view with the custom layout we created
-        mView = layoutInflater?.inflate(R.layout.popup_window, null)
+        mView = layoutInflater?.inflate(R.layout.bottom_sheet_dialog, null)
         // set onClickListener on the remove button, which removes
         // the view from the window
+
+
+//        val bottomSheet = mView?.findViewById<ConstraintLayout>(R.id.main_bottom_sheet)
+//        val bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout> by lazy { BottomSheetBehavior.from(bottomSheet) }
 
         mView?.findViewById<View>(R.id.window_close)?.setOnClickListener { close() }
         mView?.findViewById<View>(R.id.window_open)?.setOnClickListener {
@@ -66,13 +73,12 @@ open class Window(context: Context) {
 
         // Define the position of the
         // window within the screen
-//        mParams?.gravity = Gravity.CENTER
+        mParams?.gravity = Gravity.BOTTOM
         mWindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     }
 
     fun open(type: String?, text: String?) {
         try {
-
             runBlocking {
                 val response = try {
                     context?.let {
@@ -101,7 +107,6 @@ open class Window(context: Context) {
                     }
                 }
             }
-
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 //                if(!Settings.canDrawOverlays(this.context)){

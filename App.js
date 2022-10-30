@@ -9,6 +9,7 @@ import {
   NativeModules,
   TouchableOpacity,
   DeviceEventEmitter,
+  ActivityIndicator,
 } from "react-native";
 import BackgroundTimer from 'react-native-background-timer';
 
@@ -39,6 +40,7 @@ import SmsTab from './SmsTab'
 import SearchScreen from './SearchScreen'
 import ProfileScreen from "./ProfileScreen"
 import SettingScreen from "./SettingScreen"
+import DetailScreen from "./DetailScreen"
 
 import {HOST_GRAPHAL} from "./constants"
 
@@ -118,6 +120,9 @@ const HomeStackScreen =({navigation, route}) => {
         }}>
         <HomeStack.Screen
           name="home"
+          // options={({ route }) => ({
+          //   headerTitle: "getHeaderTitle(route)",
+          // })}
           component={HomeTab} 
           // options={{  
                       // headerTitle: ' Home ', 
@@ -154,13 +159,13 @@ const HomeStackScreen =({navigation, route}) => {
           }}
         />
 
-        {/* <HomeStack.Screen
-          name="sms"
-          component={SmsTab}
+        <HomeStack.Screen
+          name="detail"
+          component={DetailScreen}
           options={{  
-            headerTitle: 'SMS', 
+            headerTitle: 'Detail', 
           }}
-        /> */}
+        />
         <HomeStack.Screen
           name="search"
           component={SearchScreen}
@@ -358,6 +363,77 @@ query Homes($userId: ID, $page: Long, $perPage: Long, $keywordSearch: String, $c
 
 const Tab = createBottomTabNavigator();
 
+const linking = {
+  prefixes: ['banlistapp://'],
+  config: {
+    // initialRouteName: 'home',
+    screens: {
+      // Home: {
+      //   path: 'Home'
+      // },
+      // set config for Tabs screen 
+       // set config for App init screen
+      // PersonalInfoScreen: {
+      //   path: 'banlistapp/',
+      //     parse: {
+      //       token: (token) => `${token}`,
+      //     },
+      // },
+      tab_home: {
+        initialRouteName: "home",
+        screens: {
+          // home: {
+          //   screens: {
+          HomeTab: "tab_home/:token",
+          profile: {
+            screens: {
+              ProfileScreen: {
+                path: "tab_home/profile/:token"
+              },
+            },
+          },
+          search: {
+            screens: {
+              SearchScreen: "search/:token",
+            },
+          },
+          detail: {
+            screens: {
+              DetailScreen:"detail/:_id"
+            },
+          },
+      //   },
+      // },
+        },
+      },
+      // tab_home: {
+      //   screens: {
+      //     ProfileScreen: "tab_home_pro/:token",
+      //   },
+      // },
+      tab_call_logs:{
+        initialRouteName: "calllogs",
+        screens:{
+          CallLogsTab: "tab_call_logs/:token",
+        }
+      },
+      tab_sms:{
+        screens:{
+          SmsTab: "tab_sms/:token",
+        }
+      },
+      tab_settings:{
+        screens:{
+          SettingScreen: "tab_setting/:token",
+        }
+      }
+    }
+  }
+};
+
+// name="calllogs"
+// component={CallLogsTab}
+
 const App = (props) => {
   const banlistInfoModule = NativeModules.BanlistInfoNativeModule
 
@@ -372,7 +448,6 @@ const App = (props) => {
 
   console.log("data >> :", moment.unix(1666342799032/1000).format("DD/MM/YYYY HH:mm:ss"), secondsToHms("6010") )
 
-  
   // ค่อยรับค่าส่งมากจาก android & ios native
   DeviceEventEmitter.addListener('rnApp', (data) => {
     console.log("DeviceEventEmitter > rnApp :", data, props)
@@ -466,20 +541,24 @@ const App = (props) => {
   }, [])
   
   return (
-    <NavigationContainer> 
+    <NavigationContainer 
+      linking={linking} 
+      fallback={<View style={{flex:1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator color={"gray"}  size={'large'}/></View>}> 
       <Tab.Navigator 
-        initialRouteName="Home"
+        initialRouteName="home"
         screenOptions={{ headerShown: false }}>
         <Tab.Screen 
-          name="Home" 
+          name="tab_home" 
           component={HomeStackScreen} 
           options={({ route }) => ({
             tabBarBadge: 3,
+            tabBarLabel: 'Home',
             tabBarStyle: ((route) => {
               const routeName = getFocusedRouteNameFromRoute(route) ?? ""
               console.log(routeName)
               if (routeName === 'search' ||
-                  routeName === 'profile') {
+                  routeName === 'profile' ||
+                  routeName === 'detail' ) {
                 return { display: "none" }
               }
               return
@@ -487,11 +566,14 @@ const App = (props) => {
             tabBarIcon: ({ color, size }) => (
               <Icon name="home" color={color} size={size} />
             ),
-          })}/>
+            // tabBarVisible: getTabBarVisible(route),
+          })}
+          />
         <Tab.Screen 
-          name="Call Logs" 
+          name="tab_call_logs" 
           component={CallLogsStackScreen} 
           options={({ route }) => ({
+            tabBarLabel: 'Call Logs',
             tabBarBadge: 3,
             tabBarStyle: ((route) => {
               const routeName = getFocusedRouteNameFromRoute(route) ?? ""
@@ -506,9 +588,10 @@ const App = (props) => {
             ),
           })}/>
         <Tab.Screen 
-          name="SMS" 
+          name="tab_sms" 
           component={SMSStackScreen} 
           options={({ route }) => ({
+            tabBarLabel: 'SMS',
             tabBarBadge: 3,
             tabBarStyle: ((route) => {
               const routeName = getFocusedRouteNameFromRoute(route) ?? ""
@@ -523,9 +606,10 @@ const App = (props) => {
             ),
           })}/>
         <Tab.Screen 
-          name="Settings" 
+          name="tab_settings" 
           component={SettingStackScreen}
           options={({ route }) => ({
+            tabBarLabel: 'Settings',
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="settings" color={color} size={size} />
             ),
