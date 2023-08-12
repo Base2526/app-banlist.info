@@ -2,6 +2,12 @@ package com.banlistinfo;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
+
+import com.banlistinfo.banlistinfonativemodule.BanlistInfoNativeModulePackage;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
@@ -13,7 +19,17 @@ import com.banlistinfo.newarchitecture.MainApplicationReactNativeHost;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+
+import com.banlistinfo.banlistinfonativemodule.BanlistInfoNativeModuleModule;
+
 public class MainApplication extends Application implements ReactApplication {
+
+  public String preferenceFileName = "banlistinfo";
+
+  public String callLogs      = "call-logs";
+  public String sms           = "sms";
+
+  public String HOST_GRAPHAL  = "HOST_GRAPHAL";
 
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
@@ -28,6 +44,7 @@ public class MainApplication extends Application implements ReactApplication {
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
+          packages.add(new BanlistInfoNativeModulePackage());
           return packages;
         }
 
@@ -56,6 +73,10 @@ public class MainApplication extends Application implements ReactApplication {
     ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+
+
+
+
   }
 
   /**
